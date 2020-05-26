@@ -28,7 +28,7 @@ def main():
 
 def conexionBDD():
     try:
-        con = pymysql.connect("SERVER", "USER", "PASSWORDç", "DATA BASE")
+        con = pymysql.connect("SERVER", "USER", "PASSWORD", "DATA BASE")
     except pymysql.err.OperationalError:
         print("No hay conexión a la base de datos")
         exit()
