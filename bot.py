@@ -28,7 +28,7 @@ def main():
 
 def conexionBDD():
     try:
-        con = pymysql.connect("localhost", "user", "password", "data base")
+        con = pymysql.connect("SERVER", "USER", "PASSWORDç", "DATA BASE")
     except pymysql.err.OperationalError:
         print("No hay conexión a la base de datos")
         exit()
@@ -328,32 +328,35 @@ def clan(chatId):
                     otroClanScore0 = str(usuarioClanJson['clans'][0]['clanScore'])
                     otroParticipants0 = str(usuarioClanJson['clans'][0]['participants'])
                     otroBattlesPlayed0 = str(usuarioClanJson['clans'][0]['battlesPlayed'])
-                    otroWins0 = str(usuarioClanJson['clans'][0]['wins'])
-                    otroCrowns0 = str(usuarioClanJson['clans'][0]['crowns'])
+                    otroWins0 = int(usuarioClanJson['clans'][0]['wins'])
+                    otroCrowns0 = int(usuarioClanJson['clans'][0]['crowns'])
 
                     otroNombre1 = str(usuarioClanJson['clans'][1]['name'])
                     otroClanScore1 = str(usuarioClanJson['clans'][1]['clanScore'])
                     otroParticipants1 = str(usuarioClanJson['clans'][1]['participants'])
                     otroBattlesPlayed1 = str(usuarioClanJson['clans'][1]['battlesPlayed'])
-                    otroWins1 = str(usuarioClanJson['clans'][1]['wins'])
-                    otroCrowns1 = str(usuarioClanJson['clans'][1]['crowns'])
+                    otroWins1 = int(usuarioClanJson['clans'][1]['wins'])
+                    otroCrowns1 = int(usuarioClanJson['clans'][1]['crowns'])
                     
                     otroNombre2 = str(usuarioClanJson['clans'][2]['name'])
                     otroClanScore2 = str(usuarioClanJson['clans'][2]['clanScore'])
                     otroParticipants2 = str(usuarioClanJson['clans'][2]['participants'])
                     otroBattlesPlayed2 = str(usuarioClanJson['clans'][2]['battlesPlayed'])
-                    otroWins2 = str(usuarioClanJson['clans'][2]['wins'])
-                    otroCrowns2 = str(usuarioClanJson['clans'][2]['crowns'])
+                    otroWins2 = int(usuarioClanJson['clans'][2]['wins'])
+                    otroCrowns2 = int(usuarioClanJson['clans'][2]['crowns'])
                     
                     otroNombre3 = str(usuarioClanJson['clans'][3]['name'])
                     otroClanScore3 = str(usuarioClanJson['clans'][3]['clanScore'])
                     otroParticipants3 = str(usuarioClanJson['clans'][3]['participants'])
                     otroBattlesPlayed3 = str(usuarioClanJson['clans'][3]['battlesPlayed'])
-                    otroWins3 = str(usuarioClanJson['clans'][3]['wins'])
-                    otroCrowns3 = str(usuarioClanJson['clans'][3]['crowns'])
-                    
-                    respuesta = "Situación: " + state + "\nNombre: " + otroNombre0 + "\nPuntuación: " + otroClanScore0 + "\nParticipantes: " + otroParticipants0 + "\nBatallas jugadas: " + otroBattlesPlayed0 + "\nVictorias: " + otroWins0 + "\nCoronas: " + otroCrowns0 + "\n\nNombre: " + otroNombre1 + "\nPuntuación: " + otroClanScore1 + "\nParticipantes: " + otroParticipants1 + "\nBatallas jugadas: " + otroBattlesPlayed1 + "\nVictorias: " + otroWins1 + "\nCoronas: " + otroCrowns1 + "\n\nNombre: " + otroNombre2 + "\nPuntuación: " + otroClanScore2 + "\nParticipantes: " + otroParticipants2 + "\nBatallas jugadas: " + otroBattlesPlayed2 + "\nVictorias: " + otroWins2 + "\nCoronas: " + otroCrowns2 + "\n\nNombre: " + otroNombre3 + "\nPuntuación: " + otroClanScore3 + "\nParticipantes: " + otroParticipants3 + "\nBatallas jugadas: " + otroBattlesPlayed3 + "\nVictorias: " + otroWins3 + "\nCoronas: " + otroCrowns3
+                    otroWins3 = int(usuarioClanJson['clans'][3]['wins'])
+                    otroCrowns3 = int(usuarioClanJson['clans'][3]['crowns'])
 
+                    lista = [[otroNombre0,otroClanScore0,otroParticipants0,otroBattlesPlayed0,otroWins0,otroCrowns0],[otroNombre1,otroClanScore1,otroParticipants1,otroBattlesPlayed1,otroWins1,otroCrowns1],[otroNombre2,otroClanScore2,otroParticipants2,otroBattlesPlayed2,otroWins2,otroCrowns2],[otroNombre3,otroClanScore3,otroParticipants3,otroBattlesPlayed3,otroWins3,otroCrowns3]]
+                    lista.sort(key=lambda x: (-x[4], -x[5]))
+
+                    respuesta = "Situación: " + state + "\nNombre: " + lista[0][0] + "\nPuntuación: " + lista[0][1] + "\nParticipantes: " + lista[0][2] + "\nBatallas jugadas: " + lista[0][3] + "\nVictorias: " + str(lista[0][4]) + "\nCoronas: " + str(lista[0][5]) + "\n\nNombre: " + lista[1][0] + "\nPuntuación: " + lista[1][1] + "\nParticipantes: " + lista[1][2] + "\nBatallas jugadas: " + lista[1][3] + "\nVictorias: " + str(lista[1][4]) + "\nCoronas: " + str(lista[1][5]) + "\n\nNombre: " + lista[2][0] + "\nPuntuación: " + lista[2][1] + "\nParticipantes: " + lista[2][2] + "\nBatallas jugadas: " + lista[2][3] + "\nVictorias: " + str(lista[2][4]) + "\nCoronas: " + str(lista[2][5]) + "\n\nNombre: " + lista[3][0] + "\nPuntuación: " + lista[3][1] + "\nParticipantes: " + lista[3][2] + "\nBatallas jugadas: " + lista[3][3] + "\nVictorias: " + str(lista[3][4]) + "\nCoronas: " + str(lista[3][5])
+                    
                     return respuesta
                 else:
                     respuesta = "Situación: " + state + "\nNombre: " + name + "\nPuntuación del clan: " + clanScore + "\nParticipantes: " + participants + "\nBatallas jugadas: " + battlesPlayed + "\nVictorias: " + wins + "\nCoronas: " + crowns
