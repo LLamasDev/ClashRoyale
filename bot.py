@@ -108,11 +108,13 @@ def boton(update, context):
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=trofeos(chatId), reply_markup=botones())
     elif query.data == 'cofres':
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=cofres(chatId), reply_markup=botones())
+    elif query.data == 'ataca':
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=ataca(chatId), reply_markup=botones())
     elif query.data == 'guerras':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=clan(chatId), reply_markup=botones())
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=guerra(chatId), reply_markup=botones())
 
 def botones():
-    keyboard = [[InlineKeyboardButton("Perfil", callback_data='perfil'), InlineKeyboardButton("Trofeos", callback_data='trofeos')], [InlineKeyboardButton("Cofres", callback_data='cofres'), InlineKeyboardButton("Guerras", callback_data='guerras')]]
+    keyboard = [[InlineKeyboardButton("Perfil", callback_data='perfil')], [InlineKeyboardButton("Trofeos", callback_data='trofeos'), InlineKeyboardButton("Cofres", callback_data='cofres')], [InlineKeyboardButton("Falta por atacar", callback_data='ataca'), InlineKeyboardButton("Guerras", callback_data='guerras')]]
     
     return InlineKeyboardMarkup(keyboard)
 
@@ -273,23 +275,23 @@ def cofres(chatId):
             numero = 0
             for cofre in lista:
                 if cofre == "Silver Chest":
-                    lista[numero] = "Cofre de plata"
+                    lista[numero] = "cofre de plata"
                 elif cofre == "Golden Chest":
-                    lista[numero] = "Cofre de oro"
+                    lista[numero] = "cofre de oro"
                 elif cofre == "Giant Chest":
-                    lista[numero] = "Cofre gigante"
+                    lista[numero] = "cofre gigante"
                 elif cofre == "Epic Chest":
-                    lista[numero] = "Cofre épico"
+                    lista[numero] = "cofre épico"
                 elif cofre == "Magical Chest":
-                    lista[numero] = "Cofre mágico"
+                    lista[numero] = "cofre mágico"
                 elif cofre == "Legendary Chest":
-                    lista[numero] = "Cofre legendario"
+                    lista[numero] = "cofre legendario"
                 elif cofre == "Mega Lightning Chest":
-                    lista[numero] = "Cofre megarelámpago"
+                    lista[numero] = "cofre megarelámpago"
 
                 numero += 1
 
-            respuesta = "Siguientes cofres:\n 1: " + lista[0] + "\n 2: " + lista[1] + "\n 3: " + lista[2] + "\n 4: " + lista[3] + "\n 5: " + lista[4] + "\n 6: " + lista[5] + "\n 7: " + lista[6] + "\n 8: " + lista[7] + "\n9: " + lista[8] + "\n" + cofreNumero09 + ": " + lista[9] + "\n" + cofreNumero10 + ": " + lista[10] + "\n" + cofreNumero11 + ": " + lista[11] + "\n" + cofreNumero12 + ": " + lista[12] + "\n" + cofreNumero13 + ": " + lista[13]
+            respuesta = "Siguientes cofres:\n1 para un " + lista[0] + "\n2 para un " + lista[1] + "\n3 para un " + lista[2] + "\n4 para un " + lista[3] + "\n5 para un " + lista[4] + "\n6 para un " + lista[5] + "\n7 para un " + lista[6] + "\n8 para un " + lista[7] + "\n9 para un " + lista[8] + "\n" + cofreNumero09 + " para un " + lista[9] + "\n" + cofreNumero10 + " para un " + lista[10] + "\n" + cofreNumero11 + " para un " + lista[11] + "\n" + cofreNumero12 + " para un " + lista[12] + "\n" + cofreNumero13 + " para un " + lista[13]
 
             return respuesta
         except:
@@ -297,7 +299,7 @@ def cofres(chatId):
     else:
         return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
 
-def clan(chatId):
+def guerra(chatId):
     usuario = sacarTag(chatId)
 
     if usuario != "None":
@@ -351,11 +353,18 @@ def clan(chatId):
                     otroCrowns3 = int(usuarioClanJson['clans'][3]['crowns'])
                     otroParticipants3 = str(usuarioClanJson['clans'][3]['participants'])
                     otroBattlesPlayed3 = str(usuarioClanJson['clans'][3]['battlesPlayed'])
+                    
+                    otroNombre4 = str(usuarioClanJson['clans'][4]['name'])
+                    otroClanScore4 = str(usuarioClanJson['clans'][4]['clanScore'])
+                    otroWins4 = int(usuarioClanJson['clans'][4]['wins'])
+                    otroCrowns4 = int(usuarioClanJson['clans'][4]['crowns'])
+                    otroParticipants4 = str(usuarioClanJson['clans'][4]['participants'])
+                    otroBattlesPlayed4 = str(usuarioClanJson['clans'][4]['battlesPlayed'])
 
-                    lista = [[otroNombre0,otroClanScore0,otroWins0,otroCrowns0,otroParticipants0,otroBattlesPlayed0],[otroNombre1,otroClanScore1,otroWins1,otroCrowns1,otroParticipants1,otroBattlesPlayed1],[otroNombre2,otroClanScore2,otroWins2,otroCrowns2,otroParticipants2,otroBattlesPlayed2],[otroNombre3,otroClanScore3,otroWins3,otroCrowns3,otroParticipants3,otroBattlesPlayed3]]
+                    lista = [[otroNombre0,otroClanScore0,otroWins0,otroCrowns0,otroParticipants0,otroBattlesPlayed0],[otroNombre1,otroClanScore1,otroWins1,otroCrowns1,otroParticipants1,otroBattlesPlayed1],[otroNombre2,otroClanScore2,otroWins2,otroCrowns2,otroParticipants2,otroBattlesPlayed2],[otroNombre3,otroClanScore3,otroWins3,otroCrowns3,otroParticipants3,otroBattlesPlayed3],[otroNombre4,otroClanScore4,otroWins4,otroCrowns4,otroParticipants4,otroBattlesPlayed4]]
                     lista.sort(key=lambda x: (-x[2], -x[3]))
 
-                    respuesta = "Situación: " + state + "\n1 - " + lista[0][0] + "\nPuntuación: " + lista[0][1] + "\nVictorias: " + str(lista[0][2]) + "\nCoronas: " + str(lista[0][3]) + "\nParticipantes: " + lista[0][4] + "\nBatallas jugadas: " + lista[0][5] + "\n\n2 - " + lista[1][0] + "\nPuntuación: " + lista[1][1] + "\nVictorias: " + str(lista[1][2]) + "\nCoronas: " + str(lista[1][3]) + "\nParticipantes: " + lista[1][4] + "\nBatallas jugadas: " + lista[1][5] + "\n\n3 - " + lista[2][0] + "\nPuntuación: " + lista[2][1] + "\nVictorias: " + str(lista[2][2]) + "\nCoronas: " + str(lista[2][3]) + "\nParticipantes: " + lista[2][4] + "\nBatallas jugadas: " + lista[2][5] + "\n\n4 - " + lista[3][0] + "\nPuntuación: " + lista[3][1] + "\nVictorias: " + str(lista[3][2]) + "\nCoronas: " + str(lista[3][3]) + "\nParticipantes: " + lista[3][4] + "\nBatallas jugadas: " + lista[3][5]
+                    respuesta = "Situación: " + state + "\n1 - " + lista[0][0] + "\nPuntuación: " + lista[0][1] + "\nVictorias: " + str(lista[0][2]) + "\nCoronas: " + str(lista[0][3]) + "\nParticipantes: " + lista[0][4] + "\nBatallas jugadas: " + lista[0][5] + "\n\n2 - " + lista[1][0] + "\nPuntuación: " + lista[1][1] + "\nVictorias: " + str(lista[1][2]) + "\nCoronas: " + str(lista[1][3]) + "\nParticipantes: " + lista[1][4] + "\nBatallas jugadas: " + lista[1][5] + "\n\n3 - " + lista[2][0] + "\nPuntuación: " + lista[2][1] + "\nVictorias: " + str(lista[2][2]) + "\nCoronas: " + str(lista[2][3]) + "\nParticipantes: " + lista[2][4] + "\nBatallas jugadas: " + lista[2][5] + "\n\n4 - " + lista[3][0] + "\nPuntuación: " + lista[3][1] + "\nVictorias: " + str(lista[3][2]) + "\nCoronas: " + str(lista[3][3]) + "\nParticipantes: " + lista[3][4] + "\nBatallas jugadas: " + lista[3][5] + "\n\n5 - " + lista[4][0] + "\nPuntuación: " + lista[4][1] + "\nVictorias: " + str(lista[4][2]) + "\nCoronas: " + str(lista[4][3]) + "\nParticipantes: " + lista[4][4] + "\nBatallas jugadas: " + lista[4][5]
                     
                     return respuesta
                 else:
@@ -364,6 +373,50 @@ def clan(chatId):
                     return respuesta
         except:
             return "Sin clan"
+    else:
+        return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
+
+def ataca(chatId):
+    usuario = sacarTag(chatId)
+
+    if usuario != "None":
+        usuarioInfoJson = enlace(usuario,"info")
+        clan = str(usuarioInfoJson['clan']['tag'])
+        clan = clan.replace('#', '', 1)
+        usuarioAtacaJson = enlace(clan,"clan")
+        state = str(usuarioAtacaJson['state'])
+
+        if state != "notInWar":
+            try:
+                diccionario = {}
+                dentro = True
+                numero = 0
+                respuesta = "Ataques que faltan:"
+
+                while dentro == True:
+                    try:
+                        numberOfBattles = int(usuarioAtacaJson["participants"][numero]["numberOfBattles"])
+                        battlesPlayed = int(usuarioAtacaJson["participants"][numero]["battlesPlayed"])
+
+                        resultado = numberOfBattles - battlesPlayed
+
+                        if resultado > 0:
+                            name = str(usuarioAtacaJson["participants"][numero]["name"])
+
+                            diccionario[name] = resultado
+
+                        numero += 1
+                    except:
+                        dentro = False
+
+                for nombre,falta in diccionario.items():
+                    respuesta += "\n" + nombre + " le faltan " + str(falta)
+
+                return respuesta
+            except:
+                return "API caída"
+        else:
+            return "No en guerra"
     else:
         return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
 
