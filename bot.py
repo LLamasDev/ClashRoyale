@@ -194,8 +194,6 @@ def trofeos(chatId):
         try:
             usuarioInfoJson = enlace(usuario,"info")
 
-            nombre = str(usuarioInfoJson['name'])
-
             try:
                 currentSeasonT = str(usuarioInfoJson["leagueStatistics"]["currentSeason"]["trophies"])
                 currentSeasonBT = str(usuarioInfoJson["leagueStatistics"]["currentSeason"]["bestTrophies"])
@@ -215,7 +213,7 @@ def trofeos(chatId):
             except:
                 bestSeasonT = "Primera temporada"
 
-            respuesta = "Nombre: " + nombre + "\nTrofeos 🏆\n\t\t+ Temporada actual:\n\t\t\t\t- Trofeos: " + currentSeasonT + "\n\t\t\t\t- Récord de trofeos: " + currentSeasonBT + "\n\t\t+ Temporada pasada:\n\t\t\t\t- Trofeos: " + previousSeasonT + "\n\t\t\t\t- Récord de trofeos: " + previousSeasonBT + "\n\t\t+ Mejor temporada:\n\t\t\t\t- Récord de trofeos: " + bestSeasonT
+            respuesta = "Trofeos 🏆\n\t\t+ Temporada actual:\n\t\t\t\t- Trofeos: " + currentSeasonT + "\n\t\t\t\t- Récord de trofeos: " + currentSeasonBT + "\n\t\t+ Temporada pasada:\n\t\t\t\t- Trofeos: " + previousSeasonT + "\n\t\t\t\t- Récord de trofeos: " + previousSeasonBT + "\n\t\t+ Mejor temporada:\n\t\t\t\t- Récord de trofeos: " + bestSeasonT
 
             return respuesta
         except:
@@ -229,6 +227,9 @@ def cofres(chatId):
     if usuario != "None":
         try:
             usuarioCofresJson = enlace(usuario,"cofres")
+            respuesta = "Siguientes cofres:"
+            diccionario = {}
+            numero = 1
 
             cofre00 = str(usuarioCofresJson["items"][0]["name"])
             cofre01 = str(usuarioCofresJson["items"][1]["name"])
@@ -239,59 +240,68 @@ def cofres(chatId):
             cofre06 = str(usuarioCofresJson["items"][6]["name"])
             cofre07 = str(usuarioCofresJson["items"][7]["name"])
             cofre08 = str(usuarioCofresJson["items"][8]["name"])
+
+            lista = [cofre00, cofre01, cofre02, cofre03, cofre04, cofre05, cofre06, cofre07, cofre08]
+
+            for x in lista:
+                diccionario[numero] = numero, x
+                numero += 1
+
             try:
                 cofreNumero09 = str(usuarioCofresJson["items"][9]["index"] + 1)
                 cofre09 = str(usuarioCofresJson["items"][9]["name"])
+                
+                diccionario[numero] = cofreNumero09, cofre09
+                numero += 1
             except:
-                cofreNumero09 = ""
-                cofre09 = ""
+                pass
             try:
                 cofreNumero10 = str(usuarioCofresJson["items"][10]["index"] + 1)
                 cofre10 = str(usuarioCofresJson["items"][10]["name"])
+                
+                diccionario[numero] = cofreNumero10, cofre10
+                numero += 1
             except:
-                cofreNumero10 = ""
-                cofre10 = ""
+                pass
             try:
                 cofreNumero11 = str(usuarioCofresJson["items"][11]["index"] + 1)
                 cofre11 = str(usuarioCofresJson["items"][11]["name"])
+                
+                diccionario[numero] = cofreNumero11, cofre11
+                numero += 1
             except:
-                cofreNumero11 = ""
-                cofre11 = ""
+                pass
             try:
                 cofreNumero12 = str(usuarioCofresJson["items"][12]["index"] + 1)
                 cofre12 = str(usuarioCofresJson["items"][12]["name"])
+                
+                diccionario[numero] = cofreNumero12, cofre12
+                numero += 1
             except:
-                cofreNumero12 = ""
-                cofre12 = ""
+                pass
             try:
                 cofreNumero13 = str(usuarioCofresJson["items"][13]["index"] + 1)
                 cofre13 = str(usuarioCofresJson["items"][13]["name"])
+                
+                diccionario[numero] = cofreNumero13, cofre13
             except:
-                cofreNumero13 = ""
-                cofre13 = ""
+                pass
 
-            lista = [cofre00, cofre01, cofre02, cofre03, cofre04, cofre05, cofre06, cofre07, cofre08, cofre09, cofre10, cofre11, cofre12, cofre13]
-
-            numero = 0
-            for cofre in lista:
-                if cofre == "Silver Chest":
-                    lista[numero] = "cofre de plata"
-                elif cofre == "Golden Chest":
-                    lista[numero] = "cofre de oro"
-                elif cofre == "Giant Chest":
-                    lista[numero] = "cofre gigante"
-                elif cofre == "Epic Chest":
-                    lista[numero] = "cofre épico"
-                elif cofre == "Magical Chest":
-                    lista[numero] = "cofre mágico"
-                elif cofre == "Legendary Chest":
-                    lista[numero] = "cofre legendario"
-                elif cofre == "Mega Lightning Chest":
-                    lista[numero] = "cofre megarelámpago"
-
-                numero += 1
-
-            respuesta = "Siguientes cofres:\n1 para un " + lista[0] + "\n2 para un " + lista[1] + "\n3 para un " + lista[2] + "\n4 para un " + lista[3] + "\n5 para un " + lista[4] + "\n6 para un " + lista[5] + "\n7 para un " + lista[6] + "\n8 para un " + lista[7] + "\n9 para un " + lista[8] + "\n" + cofreNumero09 + " para un " + lista[9] + "\n" + cofreNumero10 + " para un " + lista[10] + "\n" + cofreNumero11 + " para un " + lista[11] + "\n" + cofreNumero12 + " para un " + lista[12] + "\n" + cofreNumero13 + " para un " + lista[13]
+            for numeros,cofre in diccionario.items():
+                if cofre[1] == "Silver Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre de plata"
+                elif cofre[1] == "Golden Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre de oro"
+                elif cofre[1] == "Giant Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre gigante"
+                elif cofre[1] == "Epic Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre épico"
+                elif cofre[1] == "Magical Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre mágico"
+                elif cofre[1] == "Legendary Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre legendario"
+                elif cofre[1] == "Mega Lightning Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre megarelámpago"
 
             return respuesta
         except:
@@ -321,11 +331,11 @@ def guerra(chatId):
                 crowns = str(usuarioClanJson['clan']['crowns'])
 
                 if state == "collectionDay":
-                    state = "Día de recolección"
+                    state = "día de recolección"
                 elif state == "warDay":
-                    state = "En guerra"
+                    state = "guerra"
 
-                if state == "En guerra":
+                if state == "guerra":
                     otroNombre0 = str(usuarioClanJson['clans'][0]['name'])
                     otroClanScore0 = str(usuarioClanJson['clans'][0]['clanScore'])
                     otroWins0 = int(usuarioClanJson['clans'][0]['wins'])
@@ -364,11 +374,11 @@ def guerra(chatId):
                     lista = [[otroNombre0,otroClanScore0,otroWins0,otroCrowns0,otroParticipants0,otroBattlesPlayed0],[otroNombre1,otroClanScore1,otroWins1,otroCrowns1,otroParticipants1,otroBattlesPlayed1],[otroNombre2,otroClanScore2,otroWins2,otroCrowns2,otroParticipants2,otroBattlesPlayed2],[otroNombre3,otroClanScore3,otroWins3,otroCrowns3,otroParticipants3,otroBattlesPlayed3],[otroNombre4,otroClanScore4,otroWins4,otroCrowns4,otroParticipants4,otroBattlesPlayed4]]
                     lista.sort(key=lambda x: (-x[2], -x[3]))
 
-                    respuesta = "Situación: " + state + "\n1 - " + lista[0][0] + "\nPuntuación: " + lista[0][1] + "\nVictorias: " + str(lista[0][2]) + "\nCoronas: " + str(lista[0][3]) + "\nParticipantes: " + lista[0][4] + "\nBatallas jugadas: " + lista[0][5] + "\n\n2 - " + lista[1][0] + "\nPuntuación: " + lista[1][1] + "\nVictorias: " + str(lista[1][2]) + "\nCoronas: " + str(lista[1][3]) + "\nParticipantes: " + lista[1][4] + "\nBatallas jugadas: " + lista[1][5] + "\n\n3 - " + lista[2][0] + "\nPuntuación: " + lista[2][1] + "\nVictorias: " + str(lista[2][2]) + "\nCoronas: " + str(lista[2][3]) + "\nParticipantes: " + lista[2][4] + "\nBatallas jugadas: " + lista[2][5] + "\n\n4 - " + lista[3][0] + "\nPuntuación: " + lista[3][1] + "\nVictorias: " + str(lista[3][2]) + "\nCoronas: " + str(lista[3][3]) + "\nParticipantes: " + lista[3][4] + "\nBatallas jugadas: " + lista[3][5] + "\n\n5 - " + lista[4][0] + "\nPuntuación: " + lista[4][1] + "\nVictorias: " + str(lista[4][2]) + "\nCoronas: " + str(lista[4][3]) + "\nParticipantes: " + lista[4][4] + "\nBatallas jugadas: " + lista[4][5]
+                    respuesta = name + " en " + state + ".\n1 - " + lista[0][0] + "\nPuntuación: " + lista[0][1] + "\nVictorias: " + str(lista[0][2]) + "\nCoronas: " + str(lista[0][3]) + "\nParticipantes: " + lista[0][4] + "\nBatallas jugadas: " + lista[0][5] + "\n\n2 - " + lista[1][0] + "\nPuntuación: " + lista[1][1] + "\nVictorias: " + str(lista[1][2]) + "\nCoronas: " + str(lista[1][3]) + "\nParticipantes: " + lista[1][4] + "\nBatallas jugadas: " + lista[1][5] + "\n\n3 - " + lista[2][0] + "\nPuntuación: " + lista[2][1] + "\nVictorias: " + str(lista[2][2]) + "\nCoronas: " + str(lista[2][3]) + "\nParticipantes: " + lista[2][4] + "\nBatallas jugadas: " + lista[2][5] + "\n\n4 - " + lista[3][0] + "\nPuntuación: " + lista[3][1] + "\nVictorias: " + str(lista[3][2]) + "\nCoronas: " + str(lista[3][3]) + "\nParticipantes: " + lista[3][4] + "\nBatallas jugadas: " + lista[3][5] + "\n\n5 - " + lista[4][0] + "\nPuntuación: " + lista[4][1] + "\nVictorias: " + str(lista[4][2]) + "\nCoronas: " + str(lista[4][3]) + "\nParticipantes: " + lista[4][4] + "\nBatallas jugadas: " + lista[4][5]
                     
                     return respuesta
                 else:
-                    respuesta = "Situación: " + state + "\nNombre: " + name + "\nPuntuación del clan: " + clanScore + "\nParticipantes: " + participants + "\nBatallas jugadas: " + battlesPlayed + "\nVictorias: " + wins + "\nCoronas: " + crowns
+                    respuesta = name + " en " + state + ".\nPuntuación del clan: " + clanScore + "\nParticipantes: " + participants + "\nBatallas jugadas: " + battlesPlayed + "\nVictorias: " + wins + "\nCoronas: " + crowns
 
                     return respuesta
         except:
@@ -383,6 +393,7 @@ def ataca(chatId):
         usuarioInfoJson = enlace(usuario,"info")
         clan = str(usuarioInfoJson['clan']['tag'])
         clan = clan.replace('#', '', 1)
+        nameClan = str(usuarioInfoJson['clan']['name'])
         usuarioAtacaJson = enlace(clan,"clan")
         state = str(usuarioAtacaJson['state'])
 
@@ -391,7 +402,13 @@ def ataca(chatId):
                 diccionario = {}
                 dentro = True
                 numero = 0
-                respuesta = "Ataques que faltan:"
+                
+                if state == "collectionDay":
+                    state = "día de recolección"
+                elif state == "warDay":
+                    state = "guerra"
+
+                respuesta = nameClan + " en " + state + ".\nAtaques que faltan:"
 
                 while dentro == True:
                     try:
