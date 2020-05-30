@@ -45,14 +45,6 @@ def buscarContacto(chatId):
 
     return contador
 
-def altaContactos(chatId,alias):
-    con,cursor = conexionBDD()
-    sql = "INSERT INTO usuario (id,alias) VALUES (%s, %s)"
-    datos = (chatId,alias)
-    cursor.execute(sql, datos)
-    con.commit()
-    con.close()
-
 def sacarTag(chatId):
     con,cursor = conexionBDD()
     sql = "SELECT tag FROM usuario WHERE id = %s"
@@ -65,6 +57,14 @@ def sacarTag(chatId):
     cursor.close()
 
     return respuesta
+
+def altaContactos(chatId,alias):
+    con,cursor = conexionBDD()
+    sql = "INSERT INTO usuario (id,alias) VALUES (%s, %s)"
+    datos = (chatId,alias)
+    cursor.execute(sql, datos)
+    con.commit()
+    con.close()
 
 def boton(update, context):
     query = update.callback_query
@@ -217,9 +217,14 @@ def cartas(chatId):
             numero = 0
             oro = 0
             comunOro = 0
+            comunContador = 0
             especialOro = 0
+            especialContador = 0
             epicaOro = 0
+            epicaContador = 0
             legendariaOro = 0
+            legendariaContador = 0
+            cartasContador = 0
             dentro = True
 
             while dentro == True:
@@ -235,24 +240,29 @@ def cartas(chatId):
                             for i in range(resultado, 0, -1):
                                 oro += diccionario["legendaria"][-i]
                                 legendariaOro += diccionario["legendaria"][-i]
+                                legendariaContador += 1
                         elif maxLevel == 8:
                             for i in range(resultado, 0, -1):
                                 oro += diccionario["epica"][-i]
                                 epicaOro += diccionario["epica"][-i]
+                                epicaContador += 1
                         elif maxLevel == 11:
                             for i in range(resultado, 0, -1):
                                 oro += diccionario["especial"][-i]
                                 especialOro += diccionario["especial"][-i]
+                                especialContador += 1
                         elif maxLevel == 13:
                             for i in range(resultado, 0, -1):
                                 oro += diccionario["comun"][-i]
                                 comunOro += diccionario["comun"][-i]
+                                comunContador += 1
 
                     numero += 1
                 except:
                     dentro = False
 
-            respuesta = "Oro necesario para subir al máximo.\nComún: " + str(comunOro) + "\nEspecial: " + str(especialOro) + "\nÉpica: " + str(epicaOro) + "\nLegendaria: " + str(legendariaOro) + "\nOro total: " + str(oro)
+            cartasContador = comunContador + especialContador + epicaContador + legendariaContador
+            respuesta = "Oro necesario para subir al máximo.\nTe faltan " + str(comunContador) + " niveles de cartas comunes: " + str(comunOro) + " de oro\nTe faltan " + str(especialContador) + " niveles de cartas especiales: " + str(especialOro) + " de oro\nTe faltan " + str(epicaContador) + " niveles de cartas épicas: " + str(epicaOro) + " de oro\nTe faltan " + str(legendariaContador) + " niveles de cartas legendarias: " + str(legendariaOro) + " de oro\nTe faltan " + str(cartasContador) + " niveles en total: " + str(oro) + " de oro"
 
             return respuesta
         except:
@@ -317,8 +327,8 @@ def ataca(chatId):
         if state != "notInWar":
             try:
                 diccionario = {}
-                dentro = True
                 numero = 0
+                dentro = True
                 
                 if state == "collectionDay":
                     state = "día de recolección"
