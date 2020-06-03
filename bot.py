@@ -6,7 +6,6 @@ import requests
 import urllib.request
 import json
 import pymysql
-import unidecode
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
