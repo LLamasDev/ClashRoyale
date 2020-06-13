@@ -454,8 +454,9 @@ def inactivos(chatId):
             usuarioInfoJson = enlace(usuario,"info")
             clan = str(usuarioInfoJson['clan']['tag'])
             clan = clan.replace('#', '', 1)
+            clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,"clan")
-            respuesta = 'Inactivos:'
+            respuesta = 'Inactivos en ' + clanUsu + ":"
             numero = 0
 
             while True:
@@ -503,8 +504,9 @@ def clan(chatId):
             usuarioInfoJson = enlace(usuario,"info")
             clan = str(usuarioInfoJson['clan']['tag'])
             clan = clan.replace('#', '', 1)
+            clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,"clan")
-            respuesta = '\t 🏆 \t - Miembros:'
+            respuesta = '\t 🏆 \t - Miembros de ' + clanUsu + ":"
             numero = 0
 
             while True:
