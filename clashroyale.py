@@ -79,13 +79,15 @@ def boton(update, context):
 
     if query.data == 'perfil':
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=perfil(chatId), reply_markup=botones())
-    elif query.data == 'cartas':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=cartas(chatId), reply_markup=botones())
     elif query.data == 'cofres':
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=cofres(chatId), reply_markup=botones())
+    elif query.data == 'cartas':
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=cartas(chatId), reply_markup=botones())
+    elif query.data == 'guerras':
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=guerras(chatId), reply_markup=botones())
     elif query.data == 'ataca':
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=ataca(chatId), reply_markup=botones())
-    elif query.data == 'guerras':
+    elif query.data == 'guerra':
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=guerra(chatId), reply_markup=botones())
     elif query.data == 'inactivos':
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=inactivos(chatId), reply_markup=botones())
@@ -93,7 +95,7 @@ def boton(update, context):
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=clan(chatId), reply_markup=botones())
 
 def botones():
-    keyboard = [[InlineKeyboardButton("Perfil", callback_data='perfil')], [InlineKeyboardButton("Cartas", callback_data='cartas'), InlineKeyboardButton("Cofres", callback_data='cofres')], [InlineKeyboardButton("Falta por atacar", callback_data='ataca'), InlineKeyboardButton("Guerras", callback_data='guerras')], [InlineKeyboardButton("Inactivos del clan", callback_data='inactivos'), InlineKeyboardButton("Clan", callback_data='clan')]]
+    keyboard = [[InlineKeyboardButton("Información del perfil", callback_data='perfil'), InlineKeyboardButton("Siguientes cofres", callback_data='cofres')], [InlineKeyboardButton("Oro restante para las cartas", callback_data='cartas'), InlineKeyboardButton("Participación en guerras", callback_data='guerras')], [InlineKeyboardButton("Falta por atacar en guerra", callback_data='ataca'), InlineKeyboardButton("Ranking en la guerra", callback_data='guerra')], [InlineKeyboardButton("Inactivos del clan", callback_data='inactivos'), InlineKeyboardButton("Miembros del clan", callback_data='clan')]]
 
     return InlineKeyboardMarkup(keyboard)
 
@@ -165,6 +167,12 @@ def enlace(usuario,peticion):
 
         return usuarioClanJson
 
+    elif peticion == "clanWarLog":
+        usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario) + "/warlog", headers=headers)
+        usuarioClanJson = usuarioClan.json()
+
+        return usuarioClanJson
+
     elif peticion == "clan":
         usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario) + "/members", headers=headers)
         usuarioClanJson = usuarioClan.json()
@@ -226,6 +234,48 @@ def perfil(chatId):
     else:
         return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
 
+def cofres(chatId):
+    usuario = sacarTag(chatId)
+
+    if usuario != "None":
+        try:
+            usuarioCofresJson = enlace(usuario,"cofres")
+            respuesta = "Siguientes cofres:"
+            diccionario = {}
+            numero = 0
+
+            while True:
+                try:
+                    cofreNumero = int(usuarioCofresJson["items"][numero]["index"] + 1)
+                    cofre = str(usuarioCofresJson["items"][numero]["name"])
+
+                    diccionario[numero] = cofreNumero, cofre
+                    numero += 1
+                except:
+                    break
+                    
+            for numeros,cofre in diccionario.items():
+                if cofre[1] == "Silver Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre de plata"
+                elif cofre[1] == "Golden Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre de oro"
+                elif cofre[1] == "Giant Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre gigante"
+                elif cofre[1] == "Epic Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre épico"
+                elif cofre[1] == "Magical Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre mágico"
+                elif cofre[1] == "Legendary Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre legendario"
+                elif cofre[1] == "Mega Lightning Chest":
+                    respuesta += "\n" + str(cofre[0]) + " para un cofre megarelámpago"
+
+            return respuesta
+        except:
+            return "API caída"
+    else:
+        return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
+
 def cartas(chatId):
     usuario = sacarTag(chatId)
 
@@ -279,7 +329,7 @@ def cartas(chatId):
                     break
 
             cartasContador = comunContador + especialContador + epicaContador + legendariaContador
-            respuesta = "Oro necesario para subir al máximo.\nTe faltan " + str(comunContador) + " niveles de cartas comunes: " + str(comunOro) + " de oro\nTe faltan " + str(especialContador) + " niveles de cartas especiales: " + str(especialOro) + " de oro\nTe faltan " + str(epicaContador) + " niveles de cartas épicas: " + str(epicaOro) + " de oro\nTe faltan " + str(legendariaContador) + " niveles de cartas legendarias: " + str(legendariaOro) + " de oro\nTe faltan " + str(cartasContador) + " niveles en total: " + str(oro) + " de oro"
+            respuesta = "Oro necesario para subir al máximo.\nTe faltan " + str(comunContador) + " niveles de cartas comunes: " + str(comunOro) + " de oro.\nTe faltan " + str(especialContador) + " niveles de cartas especiales: " + str(especialOro) + " de oro.\nTe faltan " + str(epicaContador) + " niveles de cartas épicas: " + str(epicaOro) + " de oro.\nTe faltan " + str(legendariaContador) + " niveles de cartas legendarias: " + str(legendariaOro) + " de oro.\nTe faltan " + str(cartasContador) + " niveles en total: " + str(oro) + " de oro."
 
             return respuesta
         except:
@@ -287,45 +337,78 @@ def cartas(chatId):
     else:
         return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
 
-def cofres(chatId):
+def guerras(chatId):
     usuario = sacarTag(chatId)
 
     if usuario != "None":
         try:
-            usuarioCofresJson = enlace(usuario,"cofres")
-            respuesta = "Siguientes cofres:"
-            diccionario = {}
-            numero = 0
+            usuarioInfoJson = enlace(usuario,"info")
+            clan = str(usuarioInfoJson['clan']['tag'])
+            clan = clan.replace('#', '', 1)
+            clanUsu = str(usuarioInfoJson['clan']['name'])
+            usuarioClanJson = enlace(clan,"clanWarLog")
 
-            while True:
+            respuesta = 'El orden sería por victorias y en caso de empate se ordena por participaciones.\nParticipación en las últimas 10 guerras de ' + clanUsu + ":"
+            listaParticipantes = []
+            listaFin = []
+            numero0 = 0
+
+            while numero0 < 10:
                 try:
-                    cofreNumero = int(usuarioCofresJson["items"][numero]["index"] + 1)
-                    cofre = str(usuarioCofresJson["items"][numero]["name"])
+                    numero1 = 0
 
-                    diccionario[numero] = cofreNumero, cofre
-                    numero += 1
+                    while True:
+                        try:
+                            name = str(usuarioClanJson['items'][numero0]['participants'][numero1]['name'])
+                            numberOfBattles = str(usuarioClanJson['items'][numero0]['participants'][numero1]['numberOfBattles'])
+                            battlesPlayed = str(usuarioClanJson['items'][numero0]['participants'][numero1]['battlesPlayed'])
+                            wins = str(usuarioClanJson['items'][numero0]['participants'][numero1]['wins'])
+                            collectionDayBattlesPlayed = str(usuarioClanJson['items'][numero0]['participants'][numero1]['collectionDayBattlesPlayed'])
+
+                            lista = [name,numberOfBattles,battlesPlayed,wins,collectionDayBattlesPlayed]
+                            listaFin.append(lista)
+                            numero1 += 1
+                        except:
+                            break
+
+                    numero0 += 1
                 except:
                     break
-                    
-            for numeros,cofre in diccionario.items():
-                if cofre[1] == "Silver Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre de plata"
-                elif cofre[1] == "Golden Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre de oro"
-                elif cofre[1] == "Giant Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre gigante"
-                elif cofre[1] == "Epic Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre épico"
-                elif cofre[1] == "Magical Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre mágico"
-                elif cofre[1] == "Legendary Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre legendario"
-                elif cofre[1] == "Mega Lightning Chest":
-                    respuesta += "\n" + str(cofre[0]) + " para un cofre megarelámpago"
+            
+            name = ''
+            numberOfBattles = 0
+            battlesPlayed = 0
+            wins = 0
+            collectionDayBattlesPlayed = 0
+            contiene = False
+
+            for x in listaFin:
+                for i in listaParticipantes:
+                    if x[0] == i[0]:
+                        contiene = True
+
+                if contiene == False:
+                    lista = [x[0],numberOfBattles,battlesPlayed,wins,collectionDayBattlesPlayed]
+                    listaParticipantes.append(lista)
+
+            for x in listaFin:
+                for i in listaParticipantes:
+                    if x[0] == i[0]:
+                        i[1] += int(x[1])
+                        i[2] += int(x[2])
+                        i[3] += int(x[3])
+                        i[4] += int(x[4])
+
+            listaParticipantes.sort(key=lambda x: (-x[3], -x[1]))
+            numero2 = 1
+            
+            for miembro in listaParticipantes:
+                respuesta += "\n" + str(numero2) + " - " + str(miembro[0]) + " ha participado en " + str(miembro[1]) + ", ha jugado " + str(miembro[2]) + ", ha ganado " + str(miembro[3]) + ", partidas de recolección " + str(miembro[4]) + "."
+                numero2 += 1
 
             return respuesta
         except:
-            return "API caída"
+            return "Sin clan"
     else:
         return "Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY"
 
@@ -456,7 +539,7 @@ def inactivos(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,"clan")
-            respuesta = 'Inactivos en ' + clanUsu + ":"
+            respuesta = 'Inactivos (más de 7 días) en ' + clanUsu + ":"
             numero = 0
 
             while True:
@@ -506,6 +589,7 @@ def clan(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,"clan")
+
             respuesta = '\t 🏆 \t - Miembros de ' + clanUsu + ":"
             numero = 0
 
@@ -513,6 +597,7 @@ def clan(chatId):
                 try:
                     name = str(usuarioClanJson['items'][numero]['name'])
                     trophies = str(usuarioClanJson['items'][numero]['trophies'])
+
                     respuesta += "\n" + trophies + " - " + name
                     numero += 1
                 except:
