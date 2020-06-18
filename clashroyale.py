@@ -7,6 +7,7 @@ import urllib.request
 import json
 import pymysql
 from datetime import date
+from googletrans import Translator
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
@@ -60,6 +61,14 @@ def sacarAlias(chatId,alias):
     if alias != respuesta:
         cambioAlias(chatId,alias)
 
+def saberIdioma(chatId):
+    con,cursor = conexionBDD()
+    cursor.execute('SELECT idioma FROM usuario WHERE id = %s', chatId)
+    respuesta = cursor.fetchall()[0][0]
+    cursor.close()
+
+    return respuesta
+
 def altaContactos(chatId,alias):
     con,cursor = conexionBDD()
     cursor.execute('INSERT INTO usuario (id,alias) VALUES (%s, %s)', (chatId,alias))
@@ -72,38 +81,58 @@ def cambioAlias(chatId,alias):
     con.commit()
     con.close()
 
-def boton(update, context):
+def traducir(chatId,texto):
+    idioma = saberIdioma(chatId)
+    translator = Translator()
+    respuesta = translator.translate(texto, src='es', dest=idioma)
+
+    return respuesta
+
+def boton(update,context):
     query = update.callback_query
     bot = context.bot
     chatId = query.message.chat_id
 
     if query.data == 'perfil':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=perfil(chatId), reply_markup=botones())
+        texto = traducir(chatId,perfil(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'cofres':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=cofres(chatId), reply_markup=botones())
+        texto = traducir(chatId,cofres(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'cartas':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=cartas(chatId), reply_markup=botones())
+        texto = traducir(chatId,cartas(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'guerras':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=guerras(chatId), reply_markup=botones())
+        texto = traducir(chatId,guerras(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'ataca':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=ataca(chatId), reply_markup=botones())
+        texto = traducir(chatId,ataca(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'guerra':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=guerra(chatId), reply_markup=botones())
+        texto = traducir(chatId,guerra(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'inactivos':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=inactivos(chatId), reply_markup=botones())
+        texto = traducir(chatId,inactivos(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto.text, reply_markup=botones(chatId))
     elif query.data == 'clan':
-        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=clan(chatId), reply_markup=botones())
+        texto = traducir(chatId,clan(chatId))
+        bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text='\t 🏆 \t ' + texto.text, reply_markup=botones(chatId))
 
-def botones():
-    keyboard = [[InlineKeyboardButton('Información del perfil', callback_data='perfil'), InlineKeyboardButton('Siguientes cofres', callback_data='cofres')], [InlineKeyboardButton('Oro para las cartas', callback_data='cartas'), InlineKeyboardButton('Actividad en guerras', callback_data='guerras')], [InlineKeyboardButton('Sin atacar en guerra', callback_data='ataca'), InlineKeyboardButton('Ranking en la guerra', callback_data='guerra')], [InlineKeyboardButton('Inactivos del clan', callback_data='inactivos'), InlineKeyboardButton('Miembros del clan', callback_data='clan')]]
+def botones(chatId):
+    idioma = saberIdioma(chatId)
+
+    if idioma == 'es':
+        keyboard = [[InlineKeyboardButton('Información del perfil', callback_data='perfil'), InlineKeyboardButton('Siguientes cofres', callback_data='cofres')], [InlineKeyboardButton('Oro para las cartas', callback_data='cartas'), InlineKeyboardButton('Actividad en guerras', callback_data='guerras')], [InlineKeyboardButton('Sin atacar en guerra', callback_data='ataca'), InlineKeyboardButton('Ranking en la guerra', callback_data='guerra')], [InlineKeyboardButton('Inactivos del clan', callback_data='inactivos'), InlineKeyboardButton('Miembros del clan', callback_data='clan')]]
+    elif idioma == 'en':
+        keyboard = [[InlineKeyboardButton('Profile info', callback_data='perfil'), InlineKeyboardButton('Next chests', callback_data='cofres')], [InlineKeyboardButton('Gold for card', callback_data='cartas'), InlineKeyboardButton('Activity in wars', callback_data='guerras')], [InlineKeyboardButton('Hasn\'t attacked in war', callback_data='ataca'), InlineKeyboardButton('Ranking in the war', callback_data='guerra')], [InlineKeyboardButton('Inactive in the clan', callback_data='inactivos'), InlineKeyboardButton('Clan members', callback_data='clan')]]
 
     return InlineKeyboardMarkup(keyboard)
 
 def start(update, context):
     tipo = update.message.chat.type
+    chatId = update.message.from_user.id
 
     if tipo == 'private':
-        chatId = update.message.from_user.id
         alias = update.message.from_user.username
         nuevoUsu = buscarContacto(chatId)
 
@@ -112,18 +141,21 @@ def start(update, context):
         else:
             sacarAlias(chatId,alias)
 
-        update.message.reply_text('Elige una opción:', reply_markup=botones())
+        textoI = traducir(chatId,'Elige una opción:')
+        update.message.reply_text(textoI.text, reply_markup=botones(chatId))
     else:
-        keyboard = [[InlineKeyboardButton('Privado 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+        texto0I = traducir(chatId,'Privado')
+        texto1I = traducir(chatId,'El funcionamiento del bot es por privado')
+        keyboard = [[InlineKeyboardButton(texto0I.text + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        update.message.reply_text('El funcionamiento del bot es por privado', reply_markup=reply_markup)
+        update.message.reply_text(texto1I.text, reply_markup=reply_markup)
 
 def register(update, context):
     tipo = update.message.chat.type
+    chatId = update.message.from_user.id
     
     if tipo == 'private':
-        chatId = update.message.from_user.id
         usuDice = ' '.join(context.args)
         con,cursor = conexionBDD()
 
@@ -141,7 +173,31 @@ def register(update, context):
             con.commit()
             con.close()
 
-            update.message.reply_text('Registrado con el nombre de usuario: ' + nombre + ' #' + usuDice)
+            textoI = traducir(chatId,'Registrado con el nombre de usuario: ')
+            update.message.reply_text(textoI.text + nombre + ' #' + usuDice)
+        except:
+            textoI = traducir(chatId,'Usuario no encontrado.\nTiene que introducir tu tag en el comando, ejemplo:')
+            update.message.reply_text(textoI.text + '\n/register 2Y0J28QY')
+    else:
+        texto0I = traducir(chatId,'Privado')
+        texto1I = traducir(chatId,'El funcionamiento del bot es por privado')
+        keyboard = [[InlineKeyboardButton(texto0I.text + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text(texto1I.text, reply_markup=reply_markup)
+
+def es(update, context):
+    tipo = update.message.chat.type
+    
+    if tipo == 'private':
+        try:
+            chatId = update.message.from_user.id
+            con,cursor = conexionBDD()
+            cursor.execute('UPDATE usuario SET idioma = "es" WHERE id = %s', chatId)
+            con.commit()
+            con.close()
+
+            update.message.reply_text('Idioma cambiado a español.')
         except:
             update.message.reply_text('Usuario no encontrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/register 2Y0J28QY')
     else:
@@ -149,6 +205,26 @@ def register(update, context):
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         update.message.reply_text('El funcionamiento del bot es por privado', reply_markup=reply_markup)
+
+def en(update, context):
+    tipo = update.message.chat.type
+    
+    if tipo == 'private':
+        try:
+            chatId = update.message.from_user.id
+            con,cursor = conexionBDD()
+            cursor.execute('UPDATE usuario SET idioma = "en" WHERE id = %s', chatId)
+            con.commit()
+            con.close()
+
+            update.message.reply_text('(BETA) Language changed to English.\nThe following translation is not exact, it is automatic and contains errors.')
+        except:
+            update.message.reply_text('User not found.\nYou have to enter your tag in the command, example:\n/register 2Y0J28QY')
+    else:
+        keyboard = [[InlineKeyboardButton('Private 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text('The operation of the bot is by private', reply_markup=reply_markup)
 
 def enlace(usuario,peticion):
     if peticion == 'info':
@@ -226,7 +302,7 @@ def perfil(chatId):
 
             donations = str(usuarioInfoJson['donations'])
             donationsReceived = str(usuarioInfoJson['donationsReceived'])
-            respuesta = 'Nombre: ' + nombre + '\nArena: ' + arena + '\nVictorias en guerra de clanes: ' + warDayWins + '\nRécord en victorias en desafíos: ' + challengeMaxWins + '\n' + clan + '\nDonaciones realizadas: ' + donations + '\nDonaciones recibidas: ' + donationsReceived + '\n\nTrofeos 🏆\n\t\t+ Temporada actual:\n\t\t\t\t- Trofeos: ' + currentSeasonT + '\n\t\t\t\t- Récord de trofeos: ' + currentSeasonBT + '\n\t\t+ Temporada pasada:\n\t\t\t\t- Trofeos: ' + previousSeasonT + '\n\t\t\t\t- Récord de trofeos: ' + previousSeasonBT + '\n\t\t+ Mejor temporada:\n\t\t\t\t- Récord de trofeos: ' + bestSeasonT
+            respuesta = 'Nombre: ' + nombre + '\nArena: ' + arena + '\nVictorias en guerra de clanes: ' + warDayWins + '\nRécord en victorias en desafíos: ' + challengeMaxWins + '\n' + clan + '\nDonaciones realizadas: ' + donations + '\nDonaciones recibidas: ' + donationsReceived + '\n\nTrofeos:\n\t\t+ Temporada actual:\n\t\t\t\t- Trofeos: ' + currentSeasonT + '\n\t\t\t\t- Récord de trofeos: ' + currentSeasonBT + '\n\t\t+ Temporada pasada:\n\t\t\t\t- Trofeos: ' + previousSeasonT + '\n\t\t\t\t- Récord de trofeos: ' + previousSeasonBT + '\n\t\t+ Mejor temporada:\n\t\t\t\t- Récord de trofeos: ' + bestSeasonT
             
             return respuesta
         except:
@@ -240,6 +316,7 @@ def cofres(chatId):
     if usuario != 'None':
         try:
             usuarioCofresJson = enlace(usuario,'cofres')
+            idioma = saberIdioma(chatId)
             respuesta = 'Siguientes cofres:'
             diccionario = {}
             numero = 0
@@ -253,22 +330,43 @@ def cofres(chatId):
                     numero += 1
                 except:
                     break
-                    
+
             for numeros,cofre in diccionario.items():
                 if cofre[1] == 'Silver Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre de plata'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre de plata.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for a silver chest.'
                 elif cofre[1] == 'Golden Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre de oro'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre de oro.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for a golden Chest.'
                 elif cofre[1] == 'Giant Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre gigante'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre gigante.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for a giant chest.'
                 elif cofre[1] == 'Epic Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre épico'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre épico.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for an epic chest.'
                 elif cofre[1] == 'Magical Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre mágico'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre mágico.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for a magical chest.'
                 elif cofre[1] == 'Legendary Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre legendario'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre legendario.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for a legendary chest.'
                 elif cofre[1] == 'Mega Lightning Chest':
-                    respuesta += '\n' + str(cofre[0]) + ' para un cofre megarelámpago'
+                    if idioma == 'es':
+                        respuesta += '\n' + str(cofre[0]) + ' para un cofre megarelámpago.'
+                    elif idioma == 'en':
+                        respuesta += '\n' + str(cofre[0]) + ' for a mega lightning chest.'
 
             return respuesta
         except:
@@ -590,7 +688,7 @@ def clan(chatId):
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'clan')
 
-            respuesta = '\t 🏆 \t - Miembros de ' + clanUsu + ':'
+            respuesta = '- Miembros de ' + clanUsu + ':'
             numero = 0
 
             while True:
