@@ -23,6 +23,8 @@ def main():
     updater = Updater('TOKEN', use_context=True)
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('register', register, pass_args=True))
+    updater.dispatcher.add_handler(CommandHandler('es', es))
+    updater.dispatcher.add_handler(CommandHandler('en', en))
     updater.dispatcher.add_handler(CallbackQueryHandler(boton))
     updater.start_polling()
     updater.idle()
