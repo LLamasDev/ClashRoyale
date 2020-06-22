@@ -1,6 +1,6 @@
 # Clash Royale API
 
-[@ClashRoyaleAPIBot](t.me/ClashRoyaleAPIBot)\
+[@ClashRoyaleAPIBot](https://t.me/ClashRoyaleAPIBot)\
 Provide information about your clash royale account, the clan where you are, wars and participation in the clan or absent members.
 
 ## Installation
