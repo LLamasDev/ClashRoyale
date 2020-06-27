@@ -23,6 +23,9 @@ def main():
     updater = Updater('TOKEN', use_context=True)
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('register', register, pass_args=True))
+    updater.dispatcher.add_handler(CommandHandler('lang', lang, pass_args=True))
+    updater.dispatcher.add_handler(CommandHandler('auto', auto))
+    updater.dispatcher.add_handler(CommandHandler('supportedLanguages', supportedLanguages))
     updater.dispatcher.add_handler(CommandHandler('es', es))
     updater.dispatcher.add_handler(CommandHandler('en', en))
     updater.dispatcher.add_handler(CallbackQueryHandler(boton))
@@ -86,7 +89,8 @@ def cambioAlias(chatId,alias):
 def traducir(chatId,texto):
     idioma = saberIdioma(chatId)
     translator = Translator()
-    respuesta = translator.translate(texto, src='es', dest=idioma)
+    miroIdioma = translator.detect(texto)
+    respuesta = translator.translate(texto, src=miroIdioma.lang, dest=idioma)
 
     return respuesta
 
@@ -127,6 +131,16 @@ def botones(chatId):
         keyboard = [[InlineKeyboardButton('Información del perfil', callback_data='perfil'), InlineKeyboardButton('Siguientes cofres', callback_data='cofres')], [InlineKeyboardButton('Oro para las cartas', callback_data='cartas'), InlineKeyboardButton('Actividad en guerras', callback_data='guerras')], [InlineKeyboardButton('Sin atacar en guerra', callback_data='ataca'), InlineKeyboardButton('Ranking en la guerra', callback_data='guerra')], [InlineKeyboardButton('Inactivos del clan', callback_data='inactivos'), InlineKeyboardButton('Miembros del clan', callback_data='clan')]]
     elif idioma == 'en':
         keyboard = [[InlineKeyboardButton('Profile info', callback_data='perfil'), InlineKeyboardButton('Next chests', callback_data='cofres')], [InlineKeyboardButton('Gold for card', callback_data='cartas'), InlineKeyboardButton('Activity in wars', callback_data='guerras')], [InlineKeyboardButton('Hasn\'t attacked in war', callback_data='ataca'), InlineKeyboardButton('Ranking in the war', callback_data='guerra')], [InlineKeyboardButton('Inactive in the clan', callback_data='inactivos'), InlineKeyboardButton('Clan members', callback_data='clan')]]
+    else:
+        perfilI = traducir(chatId,'Información del perfil')
+        cofresI = traducir(chatId,'Siguientes cofres')
+        cartasI = traducir(chatId,'Oro para las cartas')
+        guerrasI = traducir(chatId,'Actividad en guerras')
+        atacaI = traducir(chatId,'Sin atacar en guerra')
+        guerraI = traducir(chatId,'Ranking en la guerra')
+        inactivosI = traducir(chatId,'Inactivos del clan')
+        clanI = traducir(chatId,'Miembros del clan')
+        keyboard = [[InlineKeyboardButton(perfilI.text, callback_data='perfil'), InlineKeyboardButton(cofresI.text, callback_data='cofres')], [InlineKeyboardButton(cartasI.text, callback_data='cartas'), InlineKeyboardButton(guerrasI.text, callback_data='guerras')], [InlineKeyboardButton(atacaI.text, callback_data='ataca'), InlineKeyboardButton(guerraI.text, callback_data='guerra')], [InlineKeyboardButton(inactivosI.text, callback_data='inactivos'), InlineKeyboardButton(clanI.text, callback_data='clan')]]
 
     return InlineKeyboardMarkup(keyboard)
 
@@ -188,6 +202,108 @@ def register(update, context):
 
         update.message.reply_text(texto1I.text, reply_markup=reply_markup)
 
+def lang(update, context):
+    tipo = update.message.chat.type
+    chatId = update.message.from_user.id
+    
+    if tipo == 'private':
+        try:
+            usuDice = ' '.join(context.args)
+
+            if len(usuDice) > 0:
+                idiomas = traducirIdioma(usuDice)
+
+                if idiomas != None:
+                    con,cursor = conexionBDD()
+                    cursor.execute('UPDATE usuario SET idioma = %s WHERE id = %s', (usuDice,chatId))
+                    con.commit()
+                    con.close()
+
+                    idiomasI = traducir(chatId,idiomas)
+                    texto = 'Idioma cambiado a ' + idiomasI.text + '. La siguiente traducción no es exacta, es automática y contiene errores.'
+                    textoI = traducir(chatId,texto)
+                    update.message.reply_text(textoI.text)
+                else:
+                    textoI = traducir(chatId,'Lenguaje no soportado.')
+                    update.message.reply_text(textoI.text)
+            else:
+                idiomaUsu = update.message.from_user.language_code
+
+                try:
+                    idiomas = traducirIdioma(idiomaUsu)
+                except:
+                    idiomas = 'Idioma no soportado'
+
+                if idiomas == 'Idioma no soportado':
+                    texto0 = traducir(chatId,'Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.')
+                    texto1 = traducir(chatId,'How to use:')
+                    texto2 = traducir(chatId,'abreviatura, por ejemplo')
+                    texto3 = traducir(chatId,'Todas las abreviaturas de los lenguajes soportados:')
+                    texto = texto0.text + '\n' + texto1.text + ' /lang ' + texto2.text + ' /lang it\n' + texto3.text + ' /supportedLanguages\n/es - Cambiar el idioma a español\n/en - Change the language to English.'
+                else:
+                    texto0 = traducir(chatId,'Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.')
+                    texto1 = traducir(chatId,'How to use:')
+                    texto2 = traducir(chatId,'abreviatura, por ejemplo')
+                    texto3 = traducir(chatId,'Todas las abreviaturas de los lenguajes soportados:')
+                    texto = texto0.text + '\n' + texto1.text + ' /lang ' + texto2.text + ' /lang it\n' + texto3.text + ' /supportedLanguages\n/es - Cambiar el idioma a español\n/en - Change the language to English.\n/auto - Change the language to the default in your telegram account, in your case ' + idiomas + '.'
+
+                update.message.reply_text(texto)
+        except:
+            textoI = traducir(chatId,'Usuario no encontrado.\nTiene que introducir tu tag en el comando, ejemplo:')
+            update.message.reply_text(textoI.text + '\n/register 2Y0J28QY')
+    else:
+        texto0I = traducir(chatId,'Privado')
+        texto1I = traducir(chatId,'El funcionamiento del bot es por privado')
+        keyboard = [[InlineKeyboardButton(texto0I.text + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text(texto1I.text, reply_markup=reply_markup)
+
+def auto(update, context):
+    tipo = update.message.chat.type
+    chatId = update.message.from_user.id
+    
+    if tipo == 'private':
+        try:
+            idiomaUsu = update.message.from_user.language_code
+
+            try:
+                idiomas = traducirIdioma(idiomaUsu)
+            except:
+                idiomas = 'Idioma no soportado'
+
+            if idiomas == 'Idioma no soportado':
+                update.message.reply_text('Idioma no soportado.')
+            else:
+                con,cursor = conexionBDD()
+                cursor.execute('UPDATE usuario SET idioma = %s WHERE id = %s', (idiomaUsu,chatId))
+                con.commit()
+                con.close()
+
+                idiomasI = traducir(chatId,idiomas)
+                texto = 'Idioma cambiado a ' + idiomasI.text + '. La siguiente traducción no es exacta, es automática y contiene errores.'
+                textoI = traducir(chatId,texto)
+                update.message.reply_text(textoI.text)
+        except:
+            textoI = traducir(chatId,'Usuario no encontrado.\nTiene que introducir tu tag en el comando, ejemplo:')
+            update.message.reply_text(textoI.text + '\n/register 2Y0J28QY')
+    else:
+        texto0I = traducir(chatId,'Privado')
+        texto1I = traducir(chatId,'El funcionamiento del bot es por privado')
+        keyboard = [[InlineKeyboardButton(texto0I.text + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text(texto1I.text, reply_markup=reply_markup)
+
+def supportedLanguages(update, context):
+    languages = {'ca': 'catalan','gl': 'galician','af': 'afrikaans','sq': 'albanian','am': 'amharic','ar': 'arabic','hy': 'armenian','az': 'azerbaijani','eu': 'basque','be': 'belarusian','bn': 'bengali','bs': 'bosnian','bg': 'bulgarian','ca': 'catalan','ceb': 'cebuano','ny': 'chichewa','zh-cn': 'chinese (simplified)','zh-tw': 'chinese (traditional)','co': 'corsican','hr': 'croatian','cs': 'czech','da': 'danish','nl': 'dutch','en': 'english','eo': 'esperanto','et': 'estonian','tl': 'filipino','fi': 'finnish','fr': 'french','fy': 'frisian','gl': 'galician','ka': 'georgian','de': 'german','el': 'greek','gu': 'gujarati','ht': 'haitian creole','ha': 'hausa','haw': 'hawaiian','iw': 'hebrew','hi': 'hindi','hmn': 'hmong','hu': 'hungarian','is': 'icelandic','ig': 'igbo','id': 'indonesian','ga': 'irish','it': 'italian','ja': 'japanese','jw': 'javanese','kn': 'kannada','kk': 'kazakh','km': 'khmer','ko': 'korean','ku': 'kurdish (kurmanji)','ky': 'kyrgyz','lo': 'lao','la': 'latin','lv': 'latvian','lt': 'lithuanian','lb': 'luxembourgish','mk': 'macedonian','mg': 'malagasy','ms': 'malay','ml': 'malayalam','mt': 'maltese','mi': 'maori','mr': 'marathi','mn': 'mongolian','my': 'myanmar (burmese)','ne': 'nepali','no': 'norwegian','ps': 'pashto','fa': 'persian','pl': 'polish','pt': 'portuguese','pa': 'punjabi','ro': 'romanian','ru': 'russian','sm': 'samoan','gd': 'scots gaelic','sr': 'serbian','st': 'sesotho','sn': 'shona','sd': 'sindhi','si': 'sinhala','sk': 'slovak','sl': 'slovenian','so': 'somali','es': 'spanish','su': 'sundanese','sw': 'swahili','sv': 'swedish','tg': 'tajik','ta': 'tamil','te': 'telugu','th': 'thai','tr': 'turkish','uk': 'ukrainian','ur': 'urdu','uz': 'uzbek','vi': 'vietnamese','cy': 'welsh','xh': 'xhosa','yi': 'yiddish','yo': 'yoruba','zu': 'zulu','fil': 'Filipino','he': 'Hebrew'}
+    respuesta = ''
+
+    for abreviatura,idioma in languages.items():
+        respuesta += abreviatura + ': ' + idioma + '\n'
+        
+    update.message.reply_text(respuesta)
+
 def es(update, context):
     tipo = update.message.chat.type
     
@@ -227,6 +343,13 @@ def en(update, context):
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         update.message.reply_text('The operation of the bot is by private', reply_markup=reply_markup)
+
+def traducirIdioma(abreviaturaUsu):
+    languages = {'af': 'afrikaans','sq': 'albanian','am': 'amharic','ar': 'arabic','hy': 'armenian','az': 'azerbaijani','eu': 'basque','be': 'belarusian','bn': 'bengali','bs': 'bosnian','bg': 'bulgarian','ca': 'catalan','ceb': 'cebuano','ny': 'chichewa','zh-cn': 'chinese (simplified)','zh-tw': 'chinese (traditional)','co': 'corsican','hr': 'croatian','cs': 'czech','da': 'danish','nl': 'dutch','en': 'english','eo': 'esperanto','et': 'estonian','tl': 'filipino','fi': 'finnish','fr': 'french','fy': 'frisian','gl': 'galician','ka': 'georgian','de': 'german','el': 'greek','gu': 'gujarati','ht': 'haitian creole','ha': 'hausa','haw': 'hawaiian','iw': 'hebrew','hi': 'hindi','hmn': 'hmong','hu': 'hungarian','is': 'icelandic','ig': 'igbo','id': 'indonesian','ga': 'irish','it': 'italian','ja': 'japanese','jw': 'javanese','kn': 'kannada','kk': 'kazakh','km': 'khmer','ko': 'korean','ku': 'kurdish (kurmanji)','ky': 'kyrgyz','lo': 'lao','la': 'latin','lv': 'latvian','lt': 'lithuanian','lb': 'luxembourgish','mk': 'macedonian','mg': 'malagasy','ms': 'malay','ml': 'malayalam','mt': 'maltese','mi': 'maori','mr': 'marathi','mn': 'mongolian','my': 'myanmar (burmese)','ne': 'nepali','no': 'norwegian','ps': 'pashto','fa': 'persian','pl': 'polish','pt': 'portuguese','pa': 'punjabi','ro': 'romanian','ru': 'russian','sm': 'samoan','gd': 'scots gaelic','sr': 'serbian','st': 'sesotho','sn': 'shona','sd': 'sindhi','si': 'sinhala','sk': 'slovak','sl': 'slovenian','so': 'somali','es': 'spanish','su': 'sundanese','sw': 'swahili','sv': 'swedish','tg': 'tajik','ta': 'tamil','te': 'telugu','th': 'thai','tr': 'turkish','uk': 'ukrainian','ur': 'urdu','uz': 'uzbek','vi': 'vietnamese','cy': 'welsh','xh': 'xhosa','yi': 'yiddish','yo': 'yoruba','zu': 'zulu','fil': 'Filipino','he': 'Hebrew'}
+
+    for abreviatura,idioma in languages.items():
+        if abreviatura == abreviaturaUsu:
+            return idioma
 
 def enlace(usuario,peticion):
     if peticion == 'info':
@@ -319,7 +442,6 @@ def cofres(chatId):
         try:
             usuarioCofresJson = enlace(usuario,'cofres')
             idioma = saberIdioma(chatId)
-            respuesta = 'Siguientes cofres:'
             diccionario = {}
             numero = 0
 
@@ -333,43 +455,48 @@ def cofres(chatId):
                 except:
                     break
 
+            if idioma == 'es':
+                respuesta = 'Siguientes cofres:'
+            else:
+                respuesta = 'Next chests:'
+
             for numeros,cofre in diccionario.items():
                 if cofre[1] == 'Silver Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre de plata.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for a silver chest.'
                 elif cofre[1] == 'Golden Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre de oro.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for a golden Chest.'
                 elif cofre[1] == 'Giant Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre gigante.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for a giant chest.'
                 elif cofre[1] == 'Epic Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre épico.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for an epic chest.'
                 elif cofre[1] == 'Magical Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre mágico.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for a magical chest.'
                 elif cofre[1] == 'Legendary Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre legendario.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for a legendary chest.'
                 elif cofre[1] == 'Mega Lightning Chest':
                     if idioma == 'es':
                         respuesta += '\n' + str(cofre[0]) + ' para un cofre megarelámpago.'
-                    elif idioma == 'en':
+                    else:
                         respuesta += '\n' + str(cofre[0]) + ' for a mega lightning chest.'
-
+                        
             return respuesta
         except:
             return 'API caída'
