@@ -3,7 +3,7 @@
 
 import pymysql
 
-db = pymysql.connect('localhost', 'root', '', 'bot')
+db = pymysql.connect('SERVER', 'USER', 'PASSWORD', 'DATA BASE')
 cursor = db.cursor()
 
 try:
