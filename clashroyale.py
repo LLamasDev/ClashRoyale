@@ -29,14 +29,44 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('auto', auto))
     updater.dispatcher.add_handler(CommandHandler('es', es))
     updater.dispatcher.add_handler(CommandHandler('en', en))
+    updater.dispatcher.add_handler(CommandHandler('all', all))
     updater.dispatcher.add_handler(CommandHandler('yo', yo))
     updater.dispatcher.add_handler(CommandHandler('info', info))
     updater.dispatcher.add_handler(CallbackQueryHandler(boton))
     updater.start_polling()
     updater.idle()
 
+def all(update,context):
+    chatId = update.message.from_user.id
+
+    usoUsu(chatId)
+
+    if chatId == ID:
+        con,cursor = conexionBDD()
+        cursor.execute('SELECT count(*) FROM usuario')
+        contadorTotal = cursor.fetchone()[0]
+        cursor.execute('SELECT count(*) FROM clanes')
+        contadorGrupos = cursor.fetchone()[0]
+        cursor.execute('SELECT sum(usoHoy) FROM usuario')
+        contadorUsoHoy = cursor.fetchone()[0]
+        cursor.execute('SELECT sum(usoTotal) FROM usuario')
+        contadorUsoTotal = cursor.fetchone()[0]
+        cursor.execute('SELECT idioma, COUNT(*) FROM usuario GROUP BY idioma ORDER BY COUNT(*) DESC')
+        contadorIdiomas = ''
+
+        for idioma in cursor:
+            contadorIdiomas += '\t - ' + str(traducirIdioma(idioma[0])) + ': ' + str(idioma[1]) + '\n'
+
+        cursor.close()
+
+        consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas
+
+        update.message.reply_text(consulta)
+
 def yo(update,context):
     chatId = update.message.from_user.id
+
+    usoUsu(chatId)
 
     if chatId == ID:
         con,cursor = conexionBDD()
@@ -50,12 +80,35 @@ def yo(update,context):
         contadorIdiomas = ''
 
         for idioma in cursor:
-            idiI = traducir(chatId,traducirIdioma(idioma[0]))
-            contadorIdiomas += '\t - ' + idiI + ': ' + str(idioma[1]) + '\n'
+            contadorIdiomas += '\t - ' + str(traducirIdioma(idioma[0])) + ': ' + str(idioma[1]) + '\n'
+
+        cursor.execute('SELECT sum(usoHoy) FROM usuario')
+        contadorUsoHoy = cursor.fetchone()[0]
+        cursor.execute('SELECT sum(usoTotal) FROM usuario')
+        contadorUsoTotal = cursor.fetchone()[0]
+        cursor.execute('SELECT sum(usoHoy) FROM usuario WHERE id != ID')
+        contadorUsoHoySM = cursor.fetchone()[0]
+        cursor.execute('SELECT sum(usoTotal) FROM usuario WHERE id != ID')
+        contadorUsoTotalSM = cursor.fetchone()[0]
+        cursor.execute('SELECT alias,usoHoy FROM usuario WHERE usoHoy > 0 ORDER BY usoHoy DESC LIMIT 5')
+        contadorTopHoy = ''
+        contadorH = 1
+
+        for usuario,contador in cursor:
+            contadorTopHoy += '\t' + str(contadorH) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
+            contadorH += 1
+
+        cursor.execute('SELECT alias,usoTotal FROM usuario ORDER BY usoTotal DESC LIMIT 10')
+        contadorTopTotal = ''
+        contadorT = 1
+
+        for usuario,contador in cursor:
+            contadorTopTotal += '\t' + str(contadorT) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
+            contadorT += 1
 
         cursor.close()
 
-        consulta = '+ Estadísticas:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que usan el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas
+        consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas + '\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Comandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\n+ Usuarios usando comandos hoy:\n' + str(contadorTopHoy) + '\n+ Usuarios usando comandos total:\n' + str(contadorTopTotal)
 
         update.message.reply_text(consulta)
 
@@ -67,6 +120,16 @@ def conexionBDD():
         exit()
 
     return con,con.cursor()
+
+def usoUsu(chatId):
+    con,cursor = conexionBDD()
+    cursor.execute('SELECT usoHoy FROM usuario WHERE id = %s', chatId)
+    contadorHoy = cursor.fetchall()[0][0]
+    cursor.execute('SELECT usoTotal FROM usuario WHERE id = %s', chatId)
+    contadorTotal = cursor.fetchall()[0][0]
+    cursor.execute('UPDATE usuario SET usoHoy = %s, usoTotal = %s WHERE id = %s', (contadorHoy+1,contadorTotal+1,chatId))
+    con.commit()
+    cursor.close()
 
 def buscarContacto(chatId):
     con,cursor = conexionBDD()
@@ -180,27 +243,35 @@ def boton(update,context):
     chatId = query.message.chat_id
 
     if query.data == 'perfil':
+        usoUsu(chatId)
         texto = traducir(chatId,perfil(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'cofres':
+        usoUsu(chatId)
         texto = traducir(chatId,cofres(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'cartas':
+        usoUsu(chatId)
         texto = traducir(chatId,cartas(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'donaciones':
+        usoUsu(chatId)
         texto = traducir(chatId,donaciones(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'guerras':
+        usoUsu(chatId)
         texto = traducir(chatId,guerras(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'guerra':
+        usoUsu(chatId)
         texto = traducir(chatId,guerra(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'inactivos':
+        usoUsu(chatId)
         texto = traducir(chatId,inactivos(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text=texto, reply_markup=botones(chatId))
     elif query.data == 'clan':
+        usoUsu(chatId)
         texto = traducir(chatId,clan(chatId))
         bot.edit_message_text(chat_id=query.message.chat_id, message_id=query.message.message_id, text='\t 🏆 \t ' + texto, reply_markup=botones(chatId))
 
@@ -232,6 +303,8 @@ def start(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
 
     if tipo == 'private':
         nuevoUsu = buscarContacto(chatId)
@@ -266,6 +339,8 @@ def register(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         usuDice = ' '.join(context.args)
@@ -307,10 +382,12 @@ def ataca(update, context):
     alias = update.message.from_user.username
     chatId = update.message.from_user.id
     nuevoUsu = buscarContacto(chatId)
-    usuario = sacarTag(chatId)
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
+    usuario = sacarTag(chatId)
 
     if usuario != 'None':
         tipo = update.message.chat.type
@@ -332,8 +409,12 @@ def ataca(update, context):
 
                 cambioSpam(chatIdChat)
             else:
-                textoI = traducir(chatId,'Hasta las 00:00 no se puede volver a usar el comando.')
-                update.message.reply_text(textoI)
+                texto0I = traducir(chatId,'Privado')
+                texto1I = traducir(chatId,'Hasta las 00:00 no se puede volver a usar el comando, para evitar mencionar más de una vez, si quieres ver los que faltan, usa el comando por privado.')
+                keyboard = [[InlineKeyboardButton(texto0I + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+
+                update.message.reply_text(texto1I, reply_markup=reply_markup)
         else:
             textoFuncion = atacaFuncion(alias,chatId,usuario)
             textoI = traducir(chatId,textoFuncion)
@@ -350,6 +431,8 @@ def lang(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         try:
@@ -419,6 +502,8 @@ def auto(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         try:
@@ -467,6 +552,8 @@ def supportedLanguages(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         languages = {'ca': 'catalan','gl': 'galician','af': 'afrikaans','sq': 'albanian','am': 'amharic','ar': 'arabic','hy': 'armenian','az': 'azerbaijani','eu': 'basque','be': 'belarusian','bn': 'bengali','bs': 'bosnian','bg': 'bulgarian','ca': 'catalan','ceb': 'cebuano','ny': 'chichewa','zh-cn': 'chinese (simplified)','zh-tw': 'chinese (traditional)','co': 'corsican','hr': 'croatian','cs': 'czech','da': 'danish','nl': 'dutch','en': 'english','eo': 'esperanto','et': 'estonian','tl': 'filipino','fi': 'finnish','fr': 'french','fy': 'frisian','gl': 'galician','ka': 'georgian','de': 'german','el': 'greek','gu': 'gujarati','ht': 'haitian creole','ha': 'hausa','haw': 'hawaiian','iw': 'hebrew','hi': 'hindi','hmn': 'hmong','hu': 'hungarian','is': 'icelandic','ig': 'igbo','id': 'indonesian','ga': 'irish','it': 'italian','ja': 'japanese','jw': 'javanese','kn': 'kannada','kk': 'kazakh','km': 'khmer','ko': 'korean','ku': 'kurdish (kurmanji)','ky': 'kyrgyz','lo': 'lao','la': 'latin','lv': 'latvian','lt': 'lithuanian','lb': 'luxembourgish','mk': 'macedonian','mg': 'malagasy','ms': 'malay','ml': 'malayalam','mt': 'maltese','mi': 'maori','mr': 'marathi','mn': 'mongolian','my': 'myanmar (burmese)','ne': 'nepali','no': 'norwegian','ps': 'pashto','fa': 'persian','pl': 'polish','pt': 'portuguese','pa': 'punjabi','ro': 'romanian','ru': 'russian','sm': 'samoan','gd': 'scots gaelic','sr': 'serbian','st': 'sesotho','sn': 'shona','sd': 'sindhi','si': 'sinhala','sk': 'slovak','sl': 'slovenian','so': 'somali','es': 'spanish','su': 'sundanese','sw': 'swahili','sv': 'swedish','tg': 'tajik','ta': 'tamil','te': 'telugu','th': 'thai','tr': 'turkish','uk': 'ukrainian','ur': 'urdu','uz': 'uzbek','vi': 'vietnamese','cy': 'welsh','xh': 'xhosa','yi': 'yiddish','yo': 'yoruba','zu': 'zulu','fil': 'Filipino','he': 'Hebrew'}
@@ -497,6 +584,8 @@ def es(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         try:
@@ -529,6 +618,8 @@ def en(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         try:
@@ -561,6 +652,8 @@ def info(update, context):
     
     if nuevoUsu == 0:
         altaContactos(chatId,alias)
+
+    usoUsu(chatId)
     
     if tipo == 'private':
         textoI = traducir(chatId,'''
@@ -573,19 +666,18 @@ def info(update, context):
     + Ranking en la guerra: Muestra la clasificación en la guerra o como iría el día de recolección.
     + Inactivos del clan: Muestra los jugadores inactivos con más de 7 días sin entrar al juego.
     + Miembros del clan: Muestra todos los miembros del clan. Ordenado por trofeos.
-    
+
 /registro (Funcionamiento por privado)
     - Registra el tag del usuario en el juego, si no se hace el registro no se puede dar la información.
 
 /sinatacarenguerra (Funcionamiento por privado y en grupos)
-    - Listado de los miembros del clan que están sin atacar en guerra o día de recolección. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro
+    - Listado de los miembros del clan que están sin atacar en guerra o día de recolección. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro, si no, solo dirá el nombre sin mencionar.
 
 /lang (Funcionamiento por privado)
     - (BETA) Cambia el idioma del bot. Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.
 
 /info (Funcionamiento por privado)
     - Muestra la información del bot.
-
 ''')
         update.message.reply_text(textoI)
     else:
