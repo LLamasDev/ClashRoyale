@@ -381,6 +381,7 @@ def register(update, context):
 def ataca(update, context):
     alias = update.message.from_user.username
     chatId = update.message.from_user.id
+    tipo = update.message.chat.type
     nuevoUsu = buscarContacto(chatId)
     
     if nuevoUsu == 0:
@@ -389,20 +390,18 @@ def ataca(update, context):
     usoUsu(chatId)
     usuario = sacarTag(chatId)
 
-    if usuario != 'None':
-        tipo = update.message.chat.type
+    if tipo != 'private':
+        chatIdChat = update.message.chat.id
+        chatNombre = update.message.chat.title
+        clanRegistro = saberSiTengoClanSpam(chatIdChat)
 
-        if tipo != 'private':
-            chatIdChat = update.message.chat.id
-            chatNombre = update.message.chat.title
-            clanRegistro = saberSiTengoClanSpam(chatIdChat)
+        if clanRegistro == 0:
+            altaClan(chatIdChat,chatNombre)
 
-            if clanRegistro == 0:
-                altaClan(chatIdChat,chatNombre)
+        clanSpam = saberClanSpam(chatIdChat)
 
-            clanSpam = saberClanSpam(chatIdChat)
-
-            if clanSpam == 'si':
+        if clanSpam == 'si':
+            if usuario != 'None':
                 textoFuncion = atacaFuncion(alias,chatId,usuario)
                 textoI = traducir(chatId,textoFuncion)
                 update.message.reply_text(textoI)
@@ -410,18 +409,22 @@ def ataca(update, context):
                 cambioSpam(chatIdChat)
             else:
                 texto0I = traducir(chatId,'Privado')
-                texto1I = traducir(chatId,'Hasta las 00:00 no se puede volver a usar el comando, para evitar mencionar más de una vez, si quieres ver los que faltan, usa el comando por privado.')
+                texto1I = traducir(chatId,'Usuario no registrado, no puedo darte información de tu clan si no tengo tu información.\nTiene que introducir tu tag en el comando, ejemplo:')
                 keyboard = [[InlineKeyboardButton(texto0I + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
                 reply_markup = InlineKeyboardMarkup(keyboard)
 
-                update.message.reply_text(texto1I, reply_markup=reply_markup)
+                update.message.reply_text(texto1I + '\n/registro 2Y0J28QY', reply_markup=reply_markup)
         else:
-            textoFuncion = atacaFuncion(alias,chatId,usuario)
-            textoI = traducir(chatId,textoFuncion)
-            update.message.reply_text(textoI)
+            texto0I = traducir(chatId,'Privado')
+            texto1I = traducir(chatId,'Hasta las 00:00 no se puede volver a usar el comando, para evitar mencionar más de una vez, si quieres ver los que faltan, usa el comando por privado.')
+            keyboard = [[InlineKeyboardButton(texto0I + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
+            update.message.reply_text(texto1I, reply_markup=reply_markup)
     else:
-        textoI = traducir(chatId,'Usuario no registrado, no puedo darte información de tu clan si no tengo tu información.\nTiene que introducir tu tag en el comando, ejemplo:')
-        update.message.reply_text(textoI + '\n/registro 2Y0J28QY')
+        textoFuncion = atacaFuncion(alias,chatId,usuario)
+        textoI = traducir(chatId,textoFuncion)
+        update.message.reply_text(textoI)
 
 def lang(update, context):
     tipo = update.message.chat.type
