@@ -1,4 +1,4 @@
-# Clash Royale API
+# Clash Royale API [![Supported Python versions](https://img.shields.io/pypi/pyversions/python-telegram-bot.svg)](https://pypi.org/project/python-telegram-bot/)
 
 [@ClashRoyaleAPIBot](https://t.me/ClashRoyaleAPIBot)\
 Provide information about your clash royale account, the clan where you are, wars and participation in the clan or absent members.
@@ -8,9 +8,9 @@ Provide information about your clash royale account, the clan where you are, war
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
 ```bash
-pip install urllib3
-pip install beautifulsoup4
-pip install python-telegram-bot
-pip install PyMySQL
-pip install pandas
+pip3 install urllib3
+pip3 install beautifulsoup4
+pip3 install python-telegram-bot
+pip3 install PyMySQL
+pip3 install pandas
 ```
