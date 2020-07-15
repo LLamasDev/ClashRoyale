@@ -13,6 +13,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+TOKEN = 'TOKEN'
 
 headers = {
     'authorization': 'Bearer KEY',
@@ -20,7 +21,7 @@ headers = {
 }
 
 def main():
-    updater = Updater('TOKEN', use_context=True)
+    updater = Updater(TOKEN, use_context=True)
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('registro', register, pass_args=True))
     updater.dispatcher.add_handler(CommandHandler('sinatacarenguerra', ataca))
@@ -69,48 +70,61 @@ def yo(update,context):
     usoUsu(chatId)
 
     if chatId == ID:
-        con,cursor = conexionBDD()
-        cursor.execute('SELECT count(*) FROM usuario')
-        contadorTotal = cursor.fetchone()[0]
-        cursor.execute('SELECT count(*) FROM usuario WHERE NOT tag = "None"')
-        contadorRegistrado = cursor.fetchone()[0]
-        cursor.execute('SELECT count(*) FROM clanes')
-        contadorGrupos = cursor.fetchone()[0]
-        cursor.execute('SELECT idioma, COUNT(*) FROM usuario GROUP BY idioma ORDER BY COUNT(*) DESC')
-        contadorIdiomas = ''
-
-        for idioma in cursor:
-            contadorIdiomas += '\t - ' + str(traducirIdioma(idioma[0])) + ': ' + str(idioma[1]) + '\n'
-
-        cursor.execute('SELECT sum(usoHoy) FROM usuario')
-        contadorUsoHoy = cursor.fetchone()[0]
-        cursor.execute('SELECT sum(usoTotal) FROM usuario')
-        contadorUsoTotal = cursor.fetchone()[0]
-        cursor.execute('SELECT sum(usoHoy) FROM usuario WHERE id != ID')
-        contadorUsoHoySM = cursor.fetchone()[0]
-        cursor.execute('SELECT sum(usoTotal) FROM usuario WHERE id != ID')
-        contadorUsoTotalSM = cursor.fetchone()[0]
-        cursor.execute('SELECT alias,usoHoy FROM usuario WHERE usoHoy > 0 ORDER BY usoHoy DESC LIMIT 5')
-        contadorTopHoy = ''
-        contadorH = 1
-
-        for usuario,contador in cursor:
-            contadorTopHoy += '\t' + str(contadorH) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
-            contadorH += 1
-
-        cursor.execute('SELECT alias,usoTotal FROM usuario ORDER BY usoTotal DESC LIMIT 10')
-        contadorTopTotal = ''
-        contadorT = 1
-
-        for usuario,contador in cursor:
-            contadorTopTotal += '\t' + str(contadorT) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
-            contadorT += 1
-
-        cursor.close()
-
-        consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas + '\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Comandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\n+ Usuarios usando comandos hoy:\n' + str(contadorTopHoy) + '\n+ Usuarios usando comandos total:\n' + str(contadorTopTotal)
+        consulta = estadisticas()
 
         update.message.reply_text(consulta)
+
+def grupo():
+    usoUsu(ID)
+    consulta = estadisticas()
+
+    send_text = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + 'ID' + '&parse_mode=Markdown&text=' + consulta
+    requests.get(send_text)
+
+
+def estadisticas():
+    con,cursor = conexionBDD()
+    cursor.execute('SELECT count(*) FROM usuario')
+    contadorTotal = cursor.fetchone()[0]
+    cursor.execute('SELECT count(*) FROM usuario WHERE NOT tag = "None"')
+    contadorRegistrado = cursor.fetchone()[0]
+    cursor.execute('SELECT count(*) FROM clanes')
+    contadorGrupos = cursor.fetchone()[0]
+    cursor.execute('SELECT idioma, COUNT(*) FROM usuario GROUP BY idioma ORDER BY COUNT(*) DESC')
+    contadorIdiomas = ''
+
+    for idioma in cursor:
+        contadorIdiomas += '\t - ' + str(traducirIdioma(idioma[0])) + ': ' + str(idioma[1]) + '\n'
+
+    cursor.execute('SELECT sum(usoHoy) FROM usuario')
+    contadorUsoHoy = cursor.fetchone()[0]
+    cursor.execute('SELECT sum(usoTotal) FROM usuario')
+    contadorUsoTotal = cursor.fetchone()[0]
+    cursor.execute('SELECT sum(usoHoy) FROM usuario WHERE id != ID')
+    contadorUsoHoySM = cursor.fetchone()[0]
+    cursor.execute('SELECT sum(usoTotal) FROM usuario WHERE id != ID')
+    contadorUsoTotalSM = cursor.fetchone()[0]
+    cursor.execute('SELECT alias,usoHoy FROM usuario WHERE usoHoy > 0 ORDER BY usoHoy DESC LIMIT 5')
+    contadorTopHoy = ''
+    contadorH = 1
+
+    for usuario,contador in cursor:
+        contadorTopHoy += '\t' + str(contadorH) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
+        contadorH += 1
+
+    cursor.execute('SELECT alias,usoTotal FROM usuario ORDER BY usoTotal DESC LIMIT 5')
+    contadorTopTotal = ''
+    contadorT = 1
+
+    for usuario,contador in cursor:
+        contadorTopTotal += '\t' + str(contadorT) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
+        contadorT += 1
+
+    cursor.close()
+
+    consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas + '\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Comandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\n+ Top 5 usuarios de hoy (comandos):\n' + str(contadorTopHoy) + '\n+ Top 5 usuarios (comandos):\n' + str(contadorTopTotal)
+
+    return consulta
 
 def conexionBDD():
     try:
@@ -193,6 +207,14 @@ def saberClanSpam(chatId):
 
     return respuesta
 
+def sacarNombreClan(chatId):
+    con,cursor = conexionBDD()
+    cursor.execute('SELECT nombre FROM clanes WHERE id = %s', chatId)
+    respuesta = cursor.fetchall()[0][0]
+    cursor.close()
+
+    return respuesta
+
 def altaClan(chatId,nombre):
     con,cursor = conexionBDD()
     cursor.execute('INSERT INTO clanes (id,nombre) VALUES (%s, %s)', (chatId,nombre))
@@ -214,6 +236,12 @@ def cambioAlias(chatId,alias):
 def cambioSpam(chatId):
     con,cursor = conexionBDD()
     cursor.execute('UPDATE clanes SET spam = "no" WHERE id = %s', chatId)
+    con.commit()
+    con.close()
+
+def cambioNombreClan(nombre,chatId):
+    con,cursor = conexionBDD()
+    cursor.execute('UPDATE clanes SET nombre = %s WHERE id = %s', (nombre,chatId))
     con.commit()
     con.close()
 
@@ -323,6 +351,11 @@ def start(update, context):
             
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
             
         texto0I = traducir(chatId,'Privado')
         texto1I = traducir(chatId,'El funcionamiento de este comando es por privado')
@@ -370,6 +403,11 @@ def register(update, context):
             
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
             
         texto0I = traducir(chatId,'Privado')
         texto1I = traducir(chatId,'El funcionamiento de este comando es por privado')
@@ -398,6 +436,11 @@ def ataca(update, context):
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
 
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
+
         clanSpam = saberClanSpam(chatIdChat)
 
         if clanSpam == 'si':
@@ -409,7 +452,7 @@ def ataca(update, context):
                 cambioSpam(chatIdChat)
             else:
                 texto0I = traducir(chatId,'Privado')
-                texto1I = traducir(chatId,'Usuario no registrado, no puedo darte información de tu clan si no tengo tu información.\nTiene que introducir tu tag en el comando, ejemplo:')
+                texto1I = traducir(chatId,'Usuario no registrado, no puedo darte información de tu clan si no tengo tu información.\nTiene que introducir tu tag en el comando por privado, ejemplo:')
                 keyboard = [[InlineKeyboardButton(texto0I + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
                 reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -467,13 +510,13 @@ def lang(update, context):
 
                 if idiomas == 'Idioma no soportado':
                     texto0 = traducir(chatId,'Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.')
-                    texto1 = traducir(chatId,'How to use:')
+                    texto1 = traducir(chatId,'Como usar:')
                     texto2 = traducir(chatId,'abreviatura, por ejemplo')
                     texto3 = traducir(chatId,'Todas las abreviaturas de los lenguajes soportados:')
                     texto = texto0 + '\n' + texto1 + ' /lang ' + texto2 + ' /lang it\n' + texto3 + ' /idiomasDisponibles\n/es - Cambiar el idioma a español\n/en - Change the language to English.'
                 else:
                     texto0 = traducir(chatId,'Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.')
-                    texto1 = traducir(chatId,'How to use:')
+                    texto1 = traducir(chatId,'Como usar:')
                     texto2 = traducir(chatId,'abreviatura, por ejemplo')
                     texto3 = traducir(chatId,'Todas las abreviaturas de los lenguajes soportados:')
                     texto = texto0 + '\n' + texto1 + ' /lang ' + texto2 + ' /lang it\n' + texto3 + ' /idiomasDisponibles\n/es - Cambiar el idioma a español\n/en - Change the language to English.\n/auto - Change the language to the default in your telegram account, in your case ' + idiomas + '.'
@@ -489,6 +532,11 @@ def lang(update, context):
             
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
 
         texto0I = traducir(chatId,'Privado')
         texto1I = traducir(chatId,'El funcionamiento de este comando es por privado')
@@ -540,6 +588,11 @@ def auto(update, context):
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
 
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
+
         texto0I = traducir(chatId,'Privado')
         texto1I = traducir(chatId,'El funcionamiento de este comando es por privado')
         keyboard = [[InlineKeyboardButton(texto0I + ' 🤖', url = 't.me/ClashRoyaleAPIBot')]]
@@ -573,6 +626,11 @@ def supportedLanguages(update, context):
             
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
             
         keyboard = [[InlineKeyboardButton('Privado 🤖', url = 't.me/ClashRoyaleAPIBot')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -608,6 +666,11 @@ def es(update, context):
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
 
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
+
         keyboard = [[InlineKeyboardButton('Privado 🤖', url = 't.me/ClashRoyaleAPIBot')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -641,6 +704,11 @@ def en(update, context):
             
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
             
         keyboard = [[InlineKeyboardButton('Private 🤖', url = 't.me/ClashRoyaleAPIBot')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -660,6 +728,7 @@ def info(update, context):
     
     if tipo == 'private':
         textoI = traducir(chatId,'''
+Online desde mayo de 2020.
 /start (Funcionamiento por privado)
     + Información del perfil: Muestra toda la información del usuario en el juego.
     + Siguientes cofres: Muestra los siguientes cofres que te van a tocar.
@@ -678,6 +747,7 @@ def info(update, context):
 
 /lang (Funcionamiento por privado)
     - (BETA) Cambia el idioma del bot. Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.
+    - Todas las abreviaturas de los lenguajes soportados: /idiomasDisponibles
 
 /info (Funcionamiento por privado)
     - Muestra la información del bot.
@@ -690,6 +760,11 @@ def info(update, context):
             
         if clanRegistro == 0:
             altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
 
         texto0I = traducir(chatId,'Privado')
         texto1I = traducir(chatId,'El funcionamiento de este comando es por privado')

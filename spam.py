@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import pymysql
+from clashroyale import *
 
 db = pymysql.connect('SERVER', 'USER', 'PASSWORD', 'DATA BASE')
 cursor = db.cursor()
+
+grupo()
 
 try:
    cursor.execute('UPDATE clanes SET spam = "si"')
