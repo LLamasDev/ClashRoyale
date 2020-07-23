@@ -8,8 +8,9 @@ import json
 import pymysql
 from datetime import date
 from googletrans import Translator
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+from topdecks import *
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('registro', register, pass_args=True))
     updater.dispatcher.add_handler(CommandHandler('sinatacarenguerra', ataca))
+    updater.dispatcher.add_handler(CommandHandler('topdecks', topDecks))
     updater.dispatcher.add_handler(CommandHandler('lang', lang, pass_args=True))
     updater.dispatcher.add_handler(CommandHandler('idiomasDisponibles', supportedLanguages))
     updater.dispatcher.add_handler(CommandHandler('auto', auto))
@@ -104,7 +106,7 @@ def estadisticas():
     contadorUsoHoySM = cursor.fetchone()[0]
     cursor.execute('SELECT sum(usoTotal) FROM usuario WHERE id != ID')
     contadorUsoTotalSM = cursor.fetchone()[0]
-    cursor.execute('SELECT alias,usoHoy FROM usuario WHERE usoHoy > 0 ORDER BY usoHoy DESC LIMIT 5')
+    cursor.execute('SELECT alias,usoHoy FROM usuario WHERE usoHoy > 0 ORDER BY usoHoy DESC LIMIT 9')
     contadorTopHoy = ''
     contadorH = 1
 
@@ -112,7 +114,7 @@ def estadisticas():
         contadorTopHoy += '\t' + str(contadorH) + ' - @' + str(usuario) + ': ' + str(contador) + '\n'
         contadorH += 1
 
-    cursor.execute('SELECT alias,usoTotal FROM usuario ORDER BY usoTotal DESC LIMIT 5')
+    cursor.execute('SELECT alias,usoTotal FROM usuario ORDER BY usoTotal DESC LIMIT 9')
     contadorTopTotal = ''
     contadorT = 1
 
@@ -122,7 +124,7 @@ def estadisticas():
 
     cursor.close()
 
-    consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas + '\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Comandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\n+ Top 5 usuarios de hoy (comandos):\n' + str(contadorTopHoy) + '\n+ Top 5 usuarios (comandos):\n' + str(contadorTopTotal)
+    consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas + '\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Comandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\n+ Top 9 usuarios de hoy (comandos):\n' + str(contadorTopHoy) + '\n+ Top 9 usuarios (comandos):\n' + str(contadorTopTotal)
 
     return consulta
 
@@ -468,6 +470,42 @@ def ataca(update, context):
         textoFuncion = atacaFuncion(alias,chatId,usuario)
         textoI = traducir(chatId,textoFuncion)
         update.message.reply_text(textoI)
+
+def topDecks(update, context):
+    alias = update.message.from_user.username
+    chatId = update.message.from_user.id
+    tipo = update.message.chat.type
+    nuevoUsu = buscarContacto(chatId)
+    
+    if nuevoUsu == 0:
+        altaContactos(chatId,alias)
+
+    usoUsu(chatId)
+
+    if tipo != 'private':
+        chatIdChat = update.message.chat.id
+        chatNombre = update.message.chat.title
+        clanRegistro = saberSiTengoClanSpam(chatIdChat)
+
+        if clanRegistro == 0:
+            altaClan(chatIdChat,chatNombre)
+
+        nombreBD = sacarNombreClan(chatIdChat)
+
+        if nombreBD != chatNombre:
+            cambioNombreClan(chatNombre,chatIdChat)
+
+    listaFin = sacarMazos()
+
+    if type(listaFin) is list:
+        respuesta = 'Tops decks (link):\n'
+
+        for lista in listaFin:
+            respuesta += '[' + lista[0] + ': ' + lista[1] + ']' + '(' + lista[2] + ')' + '\n\n'
+    else:
+        respuesta = listaFin
+
+    update.message.reply_text(respuesta, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 def lang(update, context):
     tipo = update.message.chat.type
@@ -1102,7 +1140,7 @@ def guerras(chatId):
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'clanWarLog')
 
-            respuesta = 'El orden sería por victorias y en caso de empate se ordena por participaciones.\nParticipación en las últimas 10 guerras de ' + clanUsu + ':'
+            respuesta = 'Participación en las últimas 10 guerras de ' + clanUsu + ':'
             listaParticipantes = []
             listaFin = []
             numero0 = 0
