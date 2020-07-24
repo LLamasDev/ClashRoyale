@@ -1,7 +1,8 @@
-# Clash Royale API [![Supported Python versions](https://img.shields.io/pypi/pyversions/python-telegram-bot.svg)](https://pypi.org/project/python-telegram-bot/)
+# Clash Royale API
 
 [@ClashRoyaleAPIBot](https://t.me/ClashRoyaleAPIBot)\
-Provide information about your clash royale account, the clan where you are, wars and participation in the clan or absent members.
+Bot that gives information about your account and the clan where you are, is also useful to manage the clan.
+A Crontab is required to allow every day at 00:00 to reuse the commands in the groups or obtain the best decks.
 
 ## Installation
 

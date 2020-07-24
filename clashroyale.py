@@ -10,7 +10,6 @@ from datetime import date
 from googletrans import Translator
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
-from topdecks import *
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -495,15 +494,9 @@ def topDecks(update, context):
         if nombreBD != chatNombre:
             cambioNombreClan(chatNombre,chatIdChat)
 
-    listaFin = sacarMazos()
-
-    if type(listaFin) is list:
-        respuesta = 'Tops decks (link):\n'
-
-        for lista in listaFin:
-            respuesta += '[' + lista[0] + ': ' + lista[1] + ']' + '(' + lista[2] + ')' + '\n\n'
-    else:
-        respuesta = listaFin
+    f = open("topdecks.txt", "r")
+    respuesta = f.read()
+    f.close()
 
     update.message.reply_text(respuesta, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
@@ -782,6 +775,9 @@ Online desde mayo de 2020.
 
 /sinatacarenguerra (Funcionamiento por privado y en grupos)
     - Listado de los miembros del clan que están sin atacar en guerra o día de recolección. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro, si no, solo dirá el nombre sin mencionar.
+
+/topdecks (Funcionamiento por privado y en grupos)
+    - Muestra los mejores decks 1 vs 1 en el día de hoy.
 
 /lang (Funcionamiento por privado)
     - (BETA) Cambia el idioma del bot. Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.
