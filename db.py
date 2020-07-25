@@ -1,6 +1,6 @@
 import pymysql
 from data import *
-from clashroyale import *
+from translate import *
 
 def usoUsu(chatId):
     con,cursor = conexionBDD()
