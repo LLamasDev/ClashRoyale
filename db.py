@@ -152,6 +152,6 @@ def estadisticas():
 
     cursor.close()
 
-    consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas + '\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Comandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\n+ Top 9 usuarios de hoy (comandos):\n' + str(contadorTopHoy) + '\n+ Top 9 usuarios (comandos):\n' + str(contadorTopTotal)
+    consulta = 'Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Usuarios registrados: ' + str(contadorRegistrado) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\nIdiomas en uso:\n' + contadorIdiomas + '\nComandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\nComandos no mios:\n\t - Hoy: ' + str(contadorUsoHoySM) + '\n\t - Total: ' + str(contadorUsoTotalSM) + '\n\nTop 9 usuarios de hoy (' + str(contadorUsoHoy) + '):\n' + str(contadorTopHoy) + '\nTop 9 usuarios (' + str(contadorUsoTotal) + '):\n' + str(contadorTopTotal)
 
     return consulta

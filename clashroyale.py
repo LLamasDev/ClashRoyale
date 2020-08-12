@@ -56,7 +56,7 @@ def all(update,context):
 
         cursor.close()
 
-        consulta = '+ Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\n+ Comandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\n+ Idiomas en uso:\n' + contadorIdiomas
+        consulta = 'Estadísticas @ClashRoyaleAPIBot:\n\t - Usuarios que han usado el bot: ' + str(contadorTotal) + '\n\t - Grupos que han usado el bot: ' + str(contadorGrupos) + '\n\nComandos usados:\n\t - Hoy: ' + str(contadorUsoHoy) + '\n\t - Total: ' + str(contadorUsoTotal) + '\n\nIdiomas en uso:\n' + contadorIdiomas
 
         update.message.reply_text(consulta)
 

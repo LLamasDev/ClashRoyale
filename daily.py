@@ -7,7 +7,7 @@ usoUsu(miID)
 consulta = estadisticas()
 consulta = consulta.replace('_', '\_')
 
-peticion = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + grupoPeticion + '&parse_mode=Markdown&text=' + consulta
+peticion = 'https://api.telegram.org/bot' + TOKENINFO + '/sendMessage?chat_id=' + grupoPeticion + '&parse_mode=Markdown&text=' + consulta
 requests.get(peticion)
 
 con,cursor = conexionBDD()
