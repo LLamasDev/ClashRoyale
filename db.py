@@ -1,6 +1,6 @@
 import pymysql
 from data import *
-from enlacecr import *
+from enlaceapi import *
 from funcionesrepes import *
 
 def usoUsu(chatId):

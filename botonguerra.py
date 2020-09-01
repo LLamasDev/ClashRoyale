@@ -44,7 +44,7 @@ def guerra(chatId):
                 numeros = 1
                 
                 for clanGuerra in listaFinal:
-                    respuesta += str(numeros) + ' - Nombre: ' + str(clanGuerra[0]) + '\nPuntuación del clan: ' + str(clanGuerra[1]) + '\nPuntos: ' + str(clanGuerra[2]) + '\nPuntos de reparación: ' + str(clanGuerra[3]) + '\n\n'
+                    respuesta += str(numeros) + ' - ' + str(clanGuerra[0]) + '\nPuntuación del clan: ' + str(clanGuerra[1]) + '\nPuntos: ' + str(clanGuerra[2]) + '\nPuntos de reparación: ' + str(clanGuerra[3]) + '\n\n'
 
                     numeros += 1
 

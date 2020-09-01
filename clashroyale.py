@@ -17,7 +17,7 @@ from botoncofres import *
 from botonguerra import *
 from translate import *
 from botonclan import *
-from enlacecr import *
+from enlaceapi import *
 from botonoro import *
 from data import *
 from db import *
