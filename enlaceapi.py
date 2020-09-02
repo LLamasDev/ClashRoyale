@@ -33,3 +33,8 @@ def enlace(usuario,peticion):
         usuarioClanJson = usuarioClan.json()
 
         return usuarioClanJson
+    elif peticion == 'clanMiembros':
+        usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario), headers=headers)
+        usuarioClanJson = usuarioClan.json()
+
+        return usuarioClanJson

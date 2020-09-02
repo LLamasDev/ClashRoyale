@@ -51,8 +51,13 @@ def inactivos(chatId):
                     numero += 1
                 except:
                     break
+                
+            if len(respuesta) == 44:
+                respuesta = 'Sin inactivos (más de 7 días) en ' + clanUsu + '.'
 
-            return respuesta
+                return respuesta
+            else:
+                return respuesta
         except:
             return 'Sin clan'
     else:

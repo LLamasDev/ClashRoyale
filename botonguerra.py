@@ -14,7 +14,7 @@ def guerra(chatId):
             if tamano == 1:
                 return 'No en guerra'
             else:
-                respuesta = 'Beta, no muestra a tiempo real la información de los puntos por ahora.\n'
+                respuesta = ''
                 numero = 0
                 listaFinal = []
 

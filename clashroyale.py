@@ -260,8 +260,7 @@ def ataca(update, context):
 
         if clanSpam == 'si':
             if usuario != 'None':
-                # textoFuncion = atacaFuncion(alias,chatId,usuario)
-                textoFuncion = 'Con las guerras 2.0 Supercell aún no da información, cuando la información este disponible este comando volverá a funcionar.'
+                textoFuncion = atacaFuncion(alias,chatId,usuario)
                 textoI = traducir(chatId,textoFuncion)
                 update.message.reply_text(textoI)
 
@@ -281,8 +280,7 @@ def ataca(update, context):
 
             update.message.reply_text(texto1I, reply_markup=reply_markup)
     else:
-        # textoFuncion = atacaFuncion(alias,chatId,usuario)
-        textoFuncion = 'Con las guerras 2.0 Supercell aún no da información, cuando la información este disponible este comando volverá a funcionar.'
+        textoFuncion = atacaFuncion(alias,chatId,usuario)
         textoI = traducir(chatId,textoFuncion)
         update.message.reply_text(textoI)
 
@@ -579,7 +577,7 @@ Online desde mayo de 2020.
     + Siguientes cofres: Muestra los siguientes cofres que te van a tocar.
     + Oro para las cartas: Muestra el oro restante que te falta para subir tus cartas.
     + Donaciones: Muestra lo que ha donado y le han donado. Ordenado por más donaciones realizadas y en caso de empate por donaciones recibidas.
-    + Actividad en guerras: Muestra la participación en las últimas 10 guerras, las que ha jugado, las que ha ganado, partidas de recolección jugadas. El orden sería por victorias y en caso de empate se ordena por participaciones.
+    + Actividad en guerras: Muestra la participación en las últimas 10 guerras.
     + Ranking en la guerra: Muestra la clasificación en la guerra, ordenado por puntos y luego puntos de reparación.
     + Inactivos del clan: Muestra los jugadores inactivos con más de 7 días sin entrar al juego.
     + Miembros del clan: Muestra todos los miembros del clan. Ordenado por trofeos.
@@ -588,10 +586,10 @@ Online desde mayo de 2020.
     - Registra el tag del usuario en el juego, si no se hace el registro no se puede dar la información.
 
 /sinatacarenguerra (Funcionamiento por privado y en grupos)
-    - Listado de los miembros del clan que están sin atacar en guerra o día de recolección. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro, si no, solo dirá el nombre sin mencionar.
+    - Listado de los miembros del clan que están sin atacar en guerra, es decir con 0 puntos y los que tienen menos de un 20% de puntos que el resto del clan. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro, si no, solo dirá el nombre sin mencionar.
 
 /topdecks (Funcionamiento por privado y en grupos)
-    - Muestra los mejores decks 1 vs 1 en el día de hoy.
+    - Muestra los mejores decks 1 vs 1 en ladder el día de hoy (mínimo 6000 trofeos).
 
 /lang (Funcionamiento por privado)
     - (BETA) Cambia el idioma del bot. Todos los idiomas, excepto el español, no son exactos, es una traducción automática y contiene errores.
