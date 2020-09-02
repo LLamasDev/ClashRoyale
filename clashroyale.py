@@ -598,6 +598,7 @@ Online desde mayo de 2020.
 /info (Funcionamiento por privado)
     - Muestra la información del bot.
 ''')
+        textoI = textoI + '\nhttps://t.me/clashRoyaleAPI'
         update.message.reply_text(textoI)
     else:
         chatIdChat = update.message.chat.id
