@@ -10,13 +10,15 @@ def atacaFuncion(alias,chatId,usuario):
         tamano = len(usuarioClanJson)
         clanMiembro = enlace(clan,'clanMiembros')
         clanMiembros = str(clanMiembro['members'])
-        respuesta = 'Ataques que faltan en ' + nameClan + ':\n'
-        respuesta20 = ''
+        respuestaF = ''
+        respuesta30 = ''
 
         if tamano == 1:
             return 'No en guerra'
         else:
             numero = 0
+            contadorF = 0
+            contador30 = 0
 
             while True:
                 try:
@@ -27,25 +29,36 @@ def atacaFuncion(alias,chatId,usuario):
                     tag = str(usuarioClanJson['clan']['participants'][numero]['tag'])
                     tag = tag.replace('#', '', 1)
                     posibleNombre = sacarUsuarioConTag(tag)
-                    fame20 = (float(fameClan)*0.2)/float(clanMiembros)
+                    fame30 = (float(fameClan)*0.3)/float(clanMiembros)
                     
                     if posibleNombre != None:
                         name += ' (@' + posibleNombre + ')'
                     
                     if fame == '0':
-                        respuesta += name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
-                    elif float(fame) < fame20 and fame != '0':
-                        respuesta20 += name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
+                        respuestaF += name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
+                        contadorF += 1
+                    elif float(fame) < fame30 and fame != '0':
+                        respuesta30 += name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
+                        contador30 += 1
 
                     numero += 1
                 except:
                     break
 
-            if len(respuesta20) == 0:
-                respuesta = respuesta + '\nLos ' + clanMiembros + ' miembros llegan al 20% (' + str(round(fame20, 2)) + ') de ' + fameClan + ' puntos.'
+            if contadorF == 0:
+                respuestaF = '\n - Todos tienen más de 0 puntos.'
             else:
-                respuesta = respuesta + '\nDe ' + clanMiembros + ' miembros, los que no llegan al 20% (' + str(round(fame20, 2)) + ') de ' + fameClan + ' puntos:\n' + respuesta20
+                respuestaF = '\n - ' + str(contadorF) + ' ataques que faltan:\n' + respuestaF
 
+            if contador30 == 0:
+                respuesta30 = '\n - Todos llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo.'
+            else:
+                respuesta30 = '\n - ' + str(contador30) + ' no llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo:\n' + respuesta30
+
+            if int(fameClan) == 0:
+                respuesta = 'Clan sin jugar la guerra.'
+            else:
+                respuesta = nameClan + ' en guerra:' + respuestaF + respuesta30
 
             return respuesta
     except:
