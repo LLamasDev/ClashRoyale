@@ -35,10 +35,10 @@ def atacaFuncion(alias,chatId,usuario):
                         name += ' (@' + posibleNombre + ')'
                     
                     if fame == '0':
-                        respuestaF += name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
+                        respuestaF += '\t\t ' + name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
                         contadorF += 1
                     elif float(fame) < fame30 and fame != '0':
-                        respuesta30 += name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
+                        respuesta30 += '\t\t ' + name + ', puntos: ' + fame + ', puntos reparación: ' + repairPoints + '\n'
                         contador30 += 1
 
                     numero += 1
@@ -46,14 +46,14 @@ def atacaFuncion(alias,chatId,usuario):
                     break
 
             if contadorF == 0:
-                respuestaF = '\n - Todos tienen más de 0 puntos.'
+                respuestaF = '\nTodos tienen más de 0 puntos.'
             else:
-                respuestaF = '\n - ' + str(contadorF) + ' ataques que faltan:\n' + respuestaF
+                respuestaF = '\n' + str(contadorF) + ' ataques que faltan:\n' + respuestaF
 
             if contador30 == 0:
-                respuesta30 = '\n - Todos llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo.'
+                respuesta30 = '\nTodos llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo.'
             else:
-                respuesta30 = '\n - ' + str(contador30) + ' no llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo:\n' + respuesta30
+                respuesta30 = '\n' + str(contador30) + ' no llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo:\n' + respuesta30
 
             if int(fameClan) == 0:
                 respuesta = 'Clan sin jugar la guerra.'

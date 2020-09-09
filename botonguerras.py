@@ -5,7 +5,7 @@ def guerras(chatId):
 
     if usuario != 'None':
         try:
-            return 'Función sin desarrollar, esperando que pase la primera guerra.'
+            return 'Función sin desarrollar, esperando que pase las dos primeras guerras.'
         except:
             return 'Sin clan'
     else:
