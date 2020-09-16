@@ -34,9 +34,11 @@ def donaciones(chatId):
                     break
             
             listaFinal.sort(key=lambda x: (-x[1], -x[2]))
+            numeroC = 1
             
             for miembro in listaFinal:
-                respuesta += '\n' + str(miembro[0]) + ' ha donado ' + str(miembro[1]) + ' y le han donado ' + str(miembro[2]) + '.'
+                respuesta += '\n' + str(numeroC) + ' - ' + str(miembro[0]) + ' ha donado ' + str(miembro[1]) + ' y le han donado ' + str(miembro[2]) + '.'
+                numeroC += 1
 
             return respuesta
         except:

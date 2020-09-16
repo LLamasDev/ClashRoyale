@@ -13,11 +13,6 @@ def enlace(usuario,peticion):
         usuarioCofresJson = usuarioCofres.json()
 
         return usuarioCofresJson
-    elif peticion == 'clanWar': # OFF
-        usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario) + '/currentwar', headers=headers)
-        usuarioClanJson = usuarioClan.json()
-
-        return usuarioClanJson
     elif peticion == 'currentRiverRace':
         usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario) + '/currentriverrace', headers=headers)
         usuarioClanJson = usuarioClan.json()
@@ -25,11 +20,6 @@ def enlace(usuario,peticion):
         return usuarioClanJson
     elif peticion == 'riverRaceLog':
         usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario) + '/riverracelog', headers=headers)
-        usuarioClanJson = usuarioClan.json()
-
-        return usuarioClanJson
-    elif peticion == 'clanWarLog':
-        usuarioClan = requests.get('https://api.clashroyale.com/v1/clans/%23' + str(usuario) + '/warlog', headers=headers)
         usuarioClanJson = usuarioClan.json()
 
         return usuarioClanJson
