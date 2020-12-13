@@ -10,7 +10,6 @@ def clan(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'clan')
-
             respuesta = '- Miembros de ' + clanUsu + ':'
             numero = 0
 
@@ -30,7 +29,7 @@ def clan(chatId):
                     numero += 1
                 except:
                     break
-
+                
             return respuesta
         except:
             return 'Sin clan'

@@ -10,47 +10,36 @@ def guerras(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'riverRaceLog')
-            
             respuesta = 'Participación en las últimas '
             listaParticipantes = []
             listaFin = []
-            numero0 = 0
-            numero1 = 0
+            participanteN = 0
+            numero = 0
 
-            while True:
-                try:
-                    clanName = str(usuarioClanJson['items'][numero0]['standings'][numero1]['clan']['name'])
+            while participanteN < 5:
+                while True:
+                    try:
+                        name = str(usuarioClanJson['items'][0]['standings'][participanteN]['clan']['participants'][numero]['name'])
+                        tag = str(usuarioClanJson['items'][0]['standings'][participanteN]['clan']['participants'][numero]['tag'])
+                        tag = tag.replace('#', '', 1)
+                        posibleNombre = sacarUsuarioConTag(tag)
 
-                    if clanName == clanUsu:
-                        numero2 = 0
+                        if posibleNombre != None:
+                            name += ' (@' + posibleNombre + ')'
 
-                        while True:
-                            try:
-                                name = str(usuarioClanJson['items'][numero0]['standings'][numero1]['clan']['participants'][numero2]['name'])
-                                tag = str(usuarioClanJson['items'][numero0]['standings'][numero1]['clan']['participants'][numero2]['tag'])
-                                tag = tag.replace('#', '', 1)
-                                posibleNombre = sacarUsuarioConTag(tag)
+                        fame = str(usuarioClanJson['items'][0]['standings'][participanteN]['clan']['participants'][numero]['fame'])
+                        repairPoints = str(usuarioClanJson['items'][0]['standings'][participanteN]['clan']['participants'][numero]['repairPoints'])
 
-                                if posibleNombre != None:
-                                    name += ' (@' + posibleNombre + ')'
+                        if int(fame) > 0:
+                            lista = [name,fame,repairPoints]
+                            listaFin.append(lista)
 
-                                fame = str(usuarioClanJson['items'][numero0]['standings'][numero1]['clan']['participants'][numero2]['fame'])
-                                repairPoints = str(usuarioClanJson['items'][numero0]['standings'][numero1]['clan']['participants'][numero2]['repairPoints'])
+                        numero += 1
+                    except:
+                        break
 
-                                lista = [name,fame,repairPoints]
-                                listaFin.append(lista)
-                                numero2 += 1
-                            except:
-                                break
+                participanteN += 1
 
-                        numero0 += 1
-                    else:
-                        numero1 += 1
-                except:
-                    break
-
-            fame = 0
-            repairPoints = 0
             contiene = False
 
             for x in listaFin:
@@ -59,7 +48,7 @@ def guerras(chatId):
                         contiene = True
 
                 if contiene == False:
-                    lista = [x[0],fame,repairPoints]
+                    lista = [x[0],0,0]
                     listaParticipantes.append(lista)
 
             for x in listaFin:
@@ -71,14 +60,17 @@ def guerras(chatId):
             listaParticipantes.sort(key=lambda x: (-x[1], -x[2]))
             numeroC = 1
 
-            respuesta += str(numero0) + ' guerras de ' + clanUsu + ':'
+            respuesta += str(participanteN) + ' guerras de ' + clanUsu + ' (top 50 de ' + str(len(listaFin)) + '):'
             
             for miembro in listaParticipantes:
-                respuesta += '\n' + str(numeroC) + ' - ' + str(miembro[0]) + ' ha ganado ' + str(miembro[1]) + ' puntos y ' + str(miembro[2]) + ' puntos de reparación.'
-                numeroC += 1
-            
+                if numeroC == 51:
+                    break
+                else:
+                    respuesta += '\n' + str(numeroC) + ' - ' + str(miembro[0]) + ' ha ganado ' + str(miembro[1]) + ' puntos y ' + str(miembro[2]) + ' puntos de reparación.'
+                    numeroC += 1
+                    
             return respuesta
-        except:
+        except Exception as e:
             return 'Sin clan'
     else:
         return 'Usuario no registrado.\nTiene que introducir tu tag en el comando, ejemplo:\n/registro 2Y0J28QY'

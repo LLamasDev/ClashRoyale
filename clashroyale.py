@@ -577,8 +577,8 @@ Online desde mayo de 2020.
     + Siguientes cofres: Muestra los siguientes cofres que te van a tocar.
     + Oro para las cartas: Muestra el oro restante que te falta para subir tus cartas por diferentes tipos de calidad y el oro total.
     + Donaciones: Muestra lo que ha donado y le han donado. Ordenado por más donaciones realizadas y en caso de empate por donaciones recibidas.
-    + Actividad en guerras: Muestra la participación del clan en las últimas 10 guerras, ordenado por puntos y luego puntos de reparación.
-    + Ranking en la guerra: Muestra la clasificación de los clanes en la guerra actual, ordenado por puntos y luego puntos de reparación.
+    + Actividad en guerras: Muestra la participación del clan en las últimas 5 guerras, ordenado por puntos y luego puntos de reparación en caso de empate, solo se mostrarán los 50 mejores por el límite del tamaño del mensaje que deja mandar telegram.
+    + Ranking en la guerra: Muestra la clasificación de los clanes en la guerra actual, ordenado por puntos y luego puntos de reparación en caso de empate.
     + Inactivos del clan: Muestra los jugadores inactivos con más de 7 días sin entrar al juego.
     + Miembros del clan: Muestra todos los miembros del clan. Ordenado por trofeos.
 
@@ -586,7 +586,7 @@ Online desde mayo de 2020.
     - Registra el tag del usuario en el juego, si no se hace el registro no se puede dar la información.
 
 /sinatacarenguerra (Funcionamiento por privado y en grupos)
-    - Listado de los miembros del clan que están sin atacar en guerra, es decir, con 0 puntos y los que tienen menos de un 30% de puntos totales obtenidos por cada miembro en la guerra actual. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro, si no, solo dirá el nombre sin mencionar.
+    - Listado de los miembros del clan que están sin atacar en guerra, es decir, con 0 puntos y los que tienen menos de un 30% de puntos totales obtenidos por cada miembro en la guerra actual, ordenado por puntos y luego puntos de reparación en caso de empate. La idea es que el bot mencione a los que están con ataques pendientes, la única manera que el bot mencione a la persona es que esté registrada /registro, si no, solo dirá el nombre sin mencionar.
 
 /topdecks (Funcionamiento por privado y en grupos)
     - Muestra los mejores decks 1 vs 1 en ladder el día de hoy (mínimo 6000 trofeos).
