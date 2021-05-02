@@ -7,6 +7,7 @@ def traducir(chatId,texto):
     if idioma == 'es':
         return texto
     else:
+        '''
         translator = Translator()
         miroIdioma = translator.detect(texto)
 
@@ -18,5 +19,10 @@ def traducir(chatId,texto):
         respuesta = respuesta.text.replace('@ ', '@')
         respuesta = respuesta.replace(':', ': ')
         respuesta = respuesta.replace(':  ', ': ')
+        '''
+        if texto == 'Elige una opción:':
+            respuesta = '⚠⚠⚠ Translation temporarily disabled, under maintenance. ⚠⚠⚠\n\n\n' + texto
+        else:
+            respuesta = texto
 
         return respuesta

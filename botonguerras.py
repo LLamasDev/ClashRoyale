@@ -60,7 +60,7 @@ def guerras(chatId):
             listaParticipantes.sort(key=lambda x: (-x[1], -x[2]))
             numeroC = 1
 
-            respuesta += str(participanteN) + ' guerras de ' + clanUsu + ' (top 50 de ' + str(len(listaFin)) + '):'
+            respuesta += str(participanteN) + ' guerras de ' + clanUsu + '#' + clan + ' (top 50 de ' + str(len(listaFin)) + '):'
             
             for miembro in listaParticipantes:
                 if numeroC == 51:

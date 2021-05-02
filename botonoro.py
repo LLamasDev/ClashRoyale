@@ -53,7 +53,7 @@ def cartas(chatId):
                     break
 
             cartasContador = comunContador + especialContador + epicaContador + legendariaContador
-            respuesta = 'Oro necesario para subir al máximo.\nTe faltan ' + str(comunContador) + ' niveles de cartas comunes: ' + str(comunOro) + ' de oro.\nTe faltan ' + str(especialContador) + ' niveles de cartas especiales: ' + str(especialOro) + ' de oro.\nTe faltan ' + str(epicaContador) + ' niveles de cartas épicas: ' + str(epicaOro) + ' de oro.\nTe faltan ' + str(legendariaContador) + ' niveles de cartas legendarias: ' + str(legendariaOro) + ' de oro.\nTe faltan ' + str(cartasContador) + ' niveles en total: ' + str(oro) + ' de oro.'
+            respuesta = 'Oro necesario para subir al máximo:\nTe faltan ' + str(comunContador) + ' niveles de cartas comunes: ' + str(comunOro) + ' de oro.\nTe faltan ' + str(especialContador) + ' niveles de cartas especiales: ' + str(especialOro) + ' de oro.\nTe faltan ' + str(epicaContador) + ' niveles de cartas épicas: ' + str(epicaOro) + ' de oro.\nTe faltan ' + str(legendariaContador) + ' niveles de cartas legendarias: ' + str(legendariaOro) + ' de oro.\nTe faltan ' + str(cartasContador) + ' niveles en total: ' + str(oro) + ' de oro.'
 
             return respuesta
         except:

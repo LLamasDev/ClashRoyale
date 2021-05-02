@@ -14,4 +14,5 @@ pip3 install beautifulsoup4
 pip3 install python-telegram-bot
 pip3 install PyMySQL
 pip3 install pandas
+pip3 install googletrans
 ```

@@ -10,7 +10,7 @@ def clan(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'clan')
-            respuesta = '- Miembros de ' + clanUsu + ':'
+            respuesta = 'Miembros de ' + clanUsu + '#' + clan + ':'
             numero = 0
 
             while True:
@@ -25,7 +25,7 @@ def clan(chatId):
 
                     trophies = str(usuarioClanJson['items'][numero]['trophies'])
 
-                    respuesta += '\n' + trophies + ' - ' + name
+                    respuesta += '\n ' + trophies + ' - ' + name
                     numero += 1
                 except:
                     break

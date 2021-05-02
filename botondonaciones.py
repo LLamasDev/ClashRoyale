@@ -10,7 +10,7 @@ def donaciones(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'clan')
-            respuesta = 'Donaciones en ' + clanUsu + ':'
+            respuesta = 'Donaciones en ' + clanUsu + '#' + clan + ':'
             listaFinal = []
             numero = 0
 

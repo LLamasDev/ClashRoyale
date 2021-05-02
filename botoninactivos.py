@@ -11,7 +11,7 @@ def inactivos(chatId):
             clan = clan.replace('#', '', 1)
             clanUsu = str(usuarioInfoJson['clan']['name'])
             usuarioClanJson = enlace(clan,'clan')
-            respuesta = 'Inactivos (más de 7 días) en ' + clanUsu + ':'
+            respuesta = 'Inactivos (más de 7 días) en ' + clanUsu + '#' + clan + ':'
             numero = 0
 
             while True:

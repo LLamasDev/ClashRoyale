@@ -24,6 +24,7 @@ def guerra(chatId):
                         repairPointsT = 0
 
                         name = str(usuarioClanJson['clans'][numero]['name'])
+                        tag = str(usuarioClanJson['clans'][numero]['tag'])
                         badgeId = str(usuarioClanJson['clans'][numero]['badgeId'])
                         fame = usuarioClanJson['clans'][numero]['fame']
                         repairPoints = usuarioClanJson['clans'][numero]['repairPoints']
@@ -31,7 +32,7 @@ def guerra(chatId):
                         fameT += fame
                         repairPointsT += repairPoints
 
-                        lista = [name,badgeId,fame,repairPoints]
+                        lista = [name + tag,badgeId,fame,repairPoints]
 
                         listaFinal.append(lista)
                         
