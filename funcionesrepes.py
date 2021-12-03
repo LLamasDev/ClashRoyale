@@ -12,7 +12,6 @@ def atacaFuncion(alias,chatId,usuario):
         clanMiembro = enlace(clan,'clanMiembros')
         clanMiembros = str(clanMiembro['members'])
         respuestaF = ''
-        respuesta30 = ''
         numeroClan = 0
         todosLosMiembros = []
 
@@ -31,8 +30,8 @@ def atacaFuncion(alias,chatId,usuario):
         else:
             numero = 0
             miembrosDelClan = []
-            miembros0Puntos = []
-            miembros30Puntos = []
+            miembrosSinJugar = []
+            miembrosJugando = []
 
             while True:
                 try:
@@ -41,52 +40,40 @@ def atacaFuncion(alias,chatId,usuario):
                     fame = str(usuarioClanJson['clan']['participants'][numero]['fame'])
                     fameClan = str(usuarioClanJson['clan']['fame'])
                     repairPoints = str(usuarioClanJson['clan']['participants'][numero]['repairPoints'])
+                    boatAttacks = str(usuarioClanJson['clan']['participants'][numero]['boatAttacks'])
+                    decksUsed = int(usuarioClanJson['clan']['participants'][numero]['decksUsed'])
+                    decksUsedToday = int(usuarioClanJson['clan']['participants'][numero]['decksUsedToday'])
                     tag = str(usuarioClanJson['clan']['participants'][numero]['tag'])
                     tag = tag.replace('#', '', 1)
                     posibleNombre = sacarUsuarioConTag(tag)
-                    fame30 = (float(fameClan)*0.3)/float(clanMiembros)
-                    
+
                     if posibleNombre != None:
                         name += ' (@' + posibleNombre + ')'
-                    
-                    if fame == '0':
-                        lista = [tag,name,fame,repairPoints]
-                        miembros0Puntos.append(lista)
-                    elif float(fame) < fame30 and fame != '0':
-                        lista = [tag,name,fame,repairPoints]
-                        miembros30Puntos.append(lista)
+
+                    lista = [tag,name,decksUsedToday,decksUsed,fame,repairPoints,boatAttacks]
+
+                    if decksUsedToday == 0 or decksUsedToday == 1 or decksUsedToday == 2 or decksUsedToday == 3:
+                        miembrosSinJugar.append(lista)
+                    else:
+                        miembrosJugando.append(lista)
 
                     numero += 1
                 except:
                     break
 
-            if len(miembros0Puntos) == 0:
-                respuestaF = '\nTodos tienen más de 0 puntos.'
+            if len(miembrosSinJugar) == 0:
+                respuestaF = '\nTodos han jugado hoy.'
             else:
-                respuestaF = '\nAtaques que faltan:\n' + respuestaF
+                respuestaF = '\nAtaques que faltan:\n'
+                miembrosSinJugar.sort(key=lambda x: (-x[2], -x[3]), reverse=True)
 
-            if len(miembros30Puntos) == 0:
-                respuesta30 = '\nTodos llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo.'
-            else:
-                respuesta30 = '\nNo llegan al 30% (' + str(round(fame30, 2)) + ') de ' + fameClan + ' puntos que tiene el clan ahora mismo:\n'
-
-            if int(fameClan) == 0:
-                respuesta = 'Clan sin jugar la guerra.'
-            else:
-                for x in miembros0Puntos:
+                for x in miembrosSinJugar:
                     for i in todosLosMiembros:
                         if x[0] == i:
-                            respuestaF += '\t\t ' + x[1] + ', puntos: ' + x[2] + ', puntos reparación: ' + x[3] + '\n'
+                            respuestaF += x[1] + ' mazos usados hoy: ' + str(x[2]) + ', mazos usados: ' + str(x[3]) + ', puntos: ' + x[4] + '\n'
 
-                miembros30Puntos.sort(key=lambda x: (x[2], x[3]), reverse=True)
-                
-                for x in miembros30Puntos:
-                    for i in todosLosMiembros:
-                        if x[0] == i:
-                            respuesta30 += '\t\t ' + x[1] + ', puntos: ' + x[2] + ', puntos reparación: ' + x[3] + '\n'
+            respuesta = nameClan + ' en guerra:' + respuestaF
 
-                respuesta = nameClan + ' en guerra:' + respuestaF + respuesta30
-                
             return respuesta
     except Exception as e:
         print(e)
